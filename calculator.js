@@ -11,28 +11,37 @@ function main(ipWithCIDR) {
 		octetArrayBinary.push(octetBinary);
 	});
 
-	displayOctetArrayBinary(octetArrayBinary);
-	console.log(CIDR);
+	// displayOctetArrayBinary(octetArrayBinary);
+	console.log('CIDR value given: /', CIDR);
 
-	// join the IP binary strings in the array into one and print it
+	// join the IP binary strings in the array into one and print binary IP
 	var ipBinary = octetArrayBinary.join('');
-	console.log(ipBinary);
+	console.log('IP address given (Binary):', ipBinary);
+
+	// print IP in decimal
+	console.log('IP address given: ', getIpAsString(getDecimalFromBinaryIP(ipBinary)));
 
 	// print the subnet mask
 	var netmask = getSubnetMaskFromCIDR(CIDR);
-	console.log(netmask);
+	console.log('Netmask given: ', netmask);
 
-	// print network ID
+	// get the network ID as a binary string and print it
 	var networkIdBinary = getNetworkId(ipBinary, netmask);
-	console.log(networkIdBinary);
+	// console.log(networkIdBinary);
 
 	// get the network ID as a decimal array, print it
 	var networkIdDecimal = getDecimalForNetworkId(networkIdBinary);
-	console.log(networkIdDecimal);
+	// console.log(networkIdDecimal);
 
-	// get network ID as a decimal string, display it
-	var networkIdString = getNetworkIdAsString(networkIdDecimal);
+	// get network ID as a decimal string, display it for user
+	var networkIdString = getIpAsString(networkIdDecimal);
 	document.getElementById('network-id').innerHTML = networkIdString;
+	console.log('Network ID: ', networkIdString);
+
+	// get the address range, display it for user
+	var addressRange = getAddressRange(networkIdBinary, CIDR);
+	document.getElementById('address-range').innerHTML = addressRange[0] + ' to ' + addressRange[1];
+	console.log('Address range: ', addressRange[0], '-', addressRange[1]);
 
 }
 
@@ -73,6 +82,7 @@ function getSubnetMaskFromCIDR(cidrValue) {
 	return subnetMask;
 }
 
+// return the network ID as a binary string
 function getNetworkId(ip, netmask) {
 	var networkId = '';
 	// do bitwise AND on the IP address and subnet mask to get network ID
@@ -83,30 +93,53 @@ function getNetworkId(ip, netmask) {
 	return networkId;
 }
 
-function getDecimalForNetworkId(networkId) {
-	var networkIdOctetsBinary = networkId.match(/.{8}/g); // creates an array of strings of network ID octets in binary
-	// TODO: convert to decimal
-	var networkIdOctetsDecimal = [];
-	networkIdOctetsBinary.forEach(function(octet) {
-		// each octet is a binary string. use powers of 2 and the sum to get decimal value
-		var decimal = 0; // rest decimal value to 0 for each new octet
+// converts an IP given as a binary string (32 bits) to an array of decimal octets
+function getDecimalFromBinaryIP(binary) {
+	var binaryOctets = binary.match(/.{8}/g); //
+	var decimalOctets = [];
+	binaryOctets.forEach(function (octet) {
+		// each octet is a binary string. use the sum of powers of 2 to get decimal value
+		var decimal = 0; // reset decimal value to 0 for each new octet
 		for (var i = 0; i < octet.length; i++) {
 			decimal += powersOfTwo[i] * octet.charAt(i);
 		}
-		networkIdOctetsDecimal.push(decimal);
+		decimalOctets.push(decimal);
 	});
 
+	return decimalOctets;
+}
+
+// take the network ID as a binary string and return the network ID as an array of decimal octets
+function getDecimalForNetworkId(networkId) {
+	var networkIdOctetsDecimal = getDecimalFromBinaryIP(networkId);
 	return networkIdOctetsDecimal;
 }
 
-// change the array of network ID octets to a string for displaying
-function getNetworkIdAsString(networkId) {
-	var networkIdString = networkId.join('.');
-	return networkIdString;
+// change the array of IP octets to a string for displaying
+function getIpAsString(ipOctets) {
+	var ipString = ipOctets.join('.');
+	return ipString;
 }
 
 function displayOctetArrayBinary(octetArrayBinary) {
 	octetArrayBinary.forEach(function(octetBinary) {
 		console.log(octetBinary);
 	});
+}
+
+// calculate the range of addresses for the subnet. this will be from host bits all 0 (network ID) to host bits all 1 (broadcast addr)
+// takes a networkIdBinary string and an integer CIDR
+function getAddressRange(networkIdBinary, CIDR) {
+	var addressRange = []; // will contain first and last address in the subnet as properly formatted strings, e.g. ['192.168.0.0', '192.168.0.255']
+	var firstAddress = getIpAsString(getDecimalFromBinaryIP(networkIdBinary));
+	// change host bits from all 0s to all 1s for broadcast address
+	// get just the network portion of the IP
+	var networkPortion = networkIdBinary.slice(0, CIDR);
+	// concat the needed number of host bits (32-CIDR) to the end
+	var hostPortion = '1'.repeat(32 - CIDR);
+	var lastAdressBinary = networkPortion + hostPortion;
+	var lastAddress = getIpAsString(getDecimalFromBinaryIP(lastAdressBinary));
+	addressRange.push(firstAddress, lastAddress);
+	return addressRange;
+
 }
