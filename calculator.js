@@ -35,12 +35,12 @@ function main(ipWithCIDR) {
 
 	// get network ID as a decimal string, display it for user
 	var networkIdString = getIpAsString(networkIdDecimal);
-	document.getElementById('network-id').innerHTML = networkIdString;
+	document.getElementById('network-id').innerHTML = 'Network ID: ' + networkIdString;
 	console.log('Network ID: ', networkIdString);
 
 	// get the address range, display it for user
 	var addressRange = getAddressRange(networkIdBinary, CIDR);
-	document.getElementById('address-range').innerHTML = addressRange[0] + ' to ' + addressRange[1];
+	document.getElementById('address-range').innerHTML = 'Address Range: ' + addressRange[0] + ' to ' + addressRange[1];
 	console.log('Address range: ', addressRange[0], '-', addressRange[1]);
 
 }
