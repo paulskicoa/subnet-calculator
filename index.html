@@ -1,12 +1,30 @@
 <!DOCTYPE html>
 <html>
 <head>
+	<link rel="stylesheet" type="text/css" href="style.css">
 	<title>Subnet Calculator</title>
 </head>
 <body>
-	<h1>Enter an IP address in CIDR notation (for example, 192.168.53.23/24) below to get the associated Network ID and address range.</h1>
-	<input type="text" id="ipAddress">
-	<button onclick="main(ipAddress.value)">Calculate</button>
+	<h2>Enter an IP address in CIDR notation (for example, 192.168.53.23/24) below to get the associated Network ID and address range.</h2>
+	<div class="ip">
+		<input type="text" id="ipAddress" onblur="main(ipAddress.value)">
+	</div>
+	
+	<br>
+	<div class="subnet">
+		<h2>How many networks (subnets) do you need? Note: the number you choose will be rounded up to the nearest 
+		power of 2 to ensure there's an equal number of maximum hosts on all subnets. For example, if you select 6,
+		you'll get 8 subnets and could choose any 6 of these to use. The remaining subnets would be available if needed at a later date.</h2>
+		<input id="numSubnets" type="number" min="1" onblur="processNumberOfSubnets(numSubnets.value)">
+	</div>
+
+	<!-- 
+	<div class="calc-button">
+		<button onclick="main(ipAddress.value)">Calculate</button>
+		 look at CIDR number and only offer number of subnets according to host bits 
+	</div>
+	-->
+	
 	<h2 id="network-id"></h2>
 	<h2 id="address-range"></h2>
 	<script type="text/javascript" src="calculator.js"></script>

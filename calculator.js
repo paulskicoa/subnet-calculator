@@ -1,10 +1,12 @@
 const powersOfTwo = [128, 64, 32, 16, 8, 4, 2, 1];
+// don't want global vars. fix this later.
+var CIDR = 0;
 
 function main(ipWithCIDR) {
 	var octetArrayBinary = [];
 	var ipWithCIDRArray = ipWithCIDR.split('/'); // e.g. '192.168.1.0/24' becomes [192.168.1.0, 24]
 	var octetArrayDecimal = ipWithCIDRArray[0].split('.'); // get just the IP portion from the array and split it into octets
-	var CIDR = parseInt(ipWithCIDRArray[1], 10); //get just the CIDR portion from the array, convert to int with base 10 (decimal)
+	CIDR = parseInt(ipWithCIDRArray[1], 10); //get just the CIDR portion from the array, convert to int with base 10 (decimal)
 
 	octetArrayDecimal.forEach(function(octetDecimal) {
 		var octetBinary = getBinaryStringForIP(octetDecimal);
@@ -16,14 +18,18 @@ function main(ipWithCIDR) {
 
 	// join the IP binary strings in the array into one and print binary IP
 	var ipBinary = octetArrayBinary.join('');
-	console.log('IP address given (Binary):', ipBinary);
+	console.log('IP address given (binary):', ipBinary);
 
 	// print IP in decimal
 	console.log('IP address given: ', getIpAsString(getDecimalFromBinaryIP(ipBinary)));
 
-	// print the subnet mask
+	// print the subnet mask in binary
 	var netmask = getSubnetMaskFromCIDR(CIDR);
-	console.log('Netmask given: ', netmask);
+	console.log('Netmask given (binary): ', netmask);
+
+	// print the subnet mask in decimal
+	var netmaskDecimal = getIpAsString(getDecimalFromBinaryIP(netmask));
+	console.log('Netmask given: ', netmaskDecimal);
 
 	// get the network ID as a binary string and print it
 	var networkIdBinary = getNetworkId(ipBinary, netmask);
@@ -121,12 +127,6 @@ function getIpAsString(ipOctets) {
 	return ipString;
 }
 
-function displayOctetArrayBinary(octetArrayBinary) {
-	octetArrayBinary.forEach(function(octetBinary) {
-		console.log(octetBinary);
-	});
-}
-
 // calculate the range of addresses for the subnet. this will be from host bits all 0 (network ID) to host bits all 1 (broadcast addr)
 // takes a networkIdBinary string and an integer CIDR
 function getAddressRange(networkIdBinary, CIDR) {
@@ -141,5 +141,31 @@ function getAddressRange(networkIdBinary, CIDR) {
 	var lastAddress = getIpAsString(getDecimalFromBinaryIP(lastAdressBinary));
 	addressRange.push(firstAddress, lastAddress);
 	return addressRange;
+}
+
+function processNumberOfSubnets(selectedValue) {
+	// 32 - CIDR gives host bits and also how many could be borrowed for subnetting.
+	// n bits borrowed for subnetting gives max of 2^n subnets
+	// 0 bits -> 1 subnet, 1 bit 2 subnets, 2 bits 4 subnets, 3 bits 8 subnets, etc
+	// this uses my formula N = ceil(log_2(n)) to calculate bits N required to create at least n subnets
+	var selectedValue = parseInt(selectedValue);
+	var bitsRequired = Math.ceil((Math.log2(selectedValue)));
+	var numberOfSubnets = 2 ** bitsRequired; // e.g. 2^3 = 8 subnets if the user-selected value of n was 6
+	console.log('Number of subnets selected:', selectedValue)
+	console.log('Number of subnets to be created:', numberOfSubnets,'(using', bitsRequired, 'bits)');
+
+	// divide the address space as required. the borrowed bits will now be part of the network ID. 
+	// e.g. if we take 192.168.1.0/24 and borrow 1 bit, we get 2 subnets that are /25.
+	// the network IDs would then be 192.168.1.0 and 192.168.1.128 (borrowed bit is a 0 or 1, respectively). this also means it's a 0 or 1 in the netmask
+	var addressRanges = []; 
+}
+
+function displayOctetArrayBinary(octetArrayBinary) {
+	octetArrayBinary.forEach(function(octetBinary) {
+		console.log(octetBinary);
+	});
+}
+
+function displayNetworkRanges() {
 
 }
