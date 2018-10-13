@@ -35,3 +35,19 @@ h1.display-4, p.lead {
 .container {
 	width: 75%;
 }
+
+.container-2 {
+	margin: 0 auto;
+	width: 75%;
+}
+
+.calc-button {
+	text-align: center;
+	width: 75%;
+	margin: 75px auto;
+}
+
+#calcButton {
+	background-color: #e9ecef;
+	color: black;
+}
