@@ -1,34 +1,37 @@
-html {
+body {
 	font-family: 'K2D', sans-serif;
-	margin: 20px 10px 20px 10px;
+	background-color: #2C6BB1;
 }
 
-ul {
-	list-style: none;
+.jumbotron, .jumbotron-fluid {
+	color: white;
+	background-color: #2C6BB1;
 }
 
-.ip {
-	display: inline-block;
-	border-radius: 50px;
+/* changes the glow when a field is selected */
+/* .form-control:focus {
+  color: #495057;
+  background-color: #fff;
+  border-color: #FC9900;
+  outline: none;
+} */
+
+h1.display-4, p.lead {
+	text-align: center;
 }
 
-.subnet {
-	display: inline-block;
+.input-group {
+	margin-top: 10px;
+	margin-bottom: 10px;
 }
 
-#calc-button {
-	border: 2px solid black;
-	border-radius: 5px;
-	padding: 5px;
+.input-group>.input-group-prepend {
+    flex: 0 0 20%;
+}
+.input-group .input-group-text {
+    width: 100%;
 }
 
-#ipAddress {
-	border: 2px solid black;
-	border-radius: 5px;
+.container {
+	width: 75%;
 }
-
-#numSubnets {
-	border: 2px solid black;
-	border-radius: 5px;
-}
-
