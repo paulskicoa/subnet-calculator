@@ -187,6 +187,7 @@ function processSubnets(selectedValue) {
 	// the network IDs would then be 192.168.1.0, 192.168.1.64, 192.168.1.128, 192.168.1.192
 	// borrowed bits are from the 128 and 64 value places, and those IPs represent borrowed bit values 00, 01, 10, 11, respectively
 	// so 192.168.1.0 - 192.168.1.127 has that bit as a 0, and 192.168.1.128 - 192.168.1.255 has that bit as a 1
+	// or you could have borrowed bit values of 000, 001, 010, 011, 100, 101, 110, 111 for 3 bits, etc
 	var addressRanges = []; 
 	var startingCIDR = CIDR;
 	var startingNetmask = getSubnetMaskFromCIDR(startingCIDR); //e.g. '11111111111111111111111100000000' for the /24 example above
@@ -202,6 +203,36 @@ function processSubnets(selectedValue) {
 	var nextNetworkId = replaceAt(startNetId, newCIDR - 1, '1'); // should give '11000000101010000000000100100000', 192.168.1.64
 	var nextNetworkIdDecimal = getDecimalForNetworkId(nextNetworkId);
 	displayNetworkId(nextNetworkIdDecimal);
+
+	var bitCombos = [];
+	// bitCombos.push('0'.repeat(bitsRequired - 1) + '1'); // e.g. '001' for 3 bits. this is the 2nd network ID
+	// count up to 2**bitsRequired, pad or trim string length to bitsRequired as needed
+	for (var i = 1; i < numberOfSubnets; i++) {
+		bitCombos.push(decimalToBinary(i, bitsRequired));
+	}
+	console.log('Network ID combos to be added:', bitCombos);
+}
+
+function decimalToBinary(decimal, bitsRequired) {
+	var currentValue = decimal;
+	var binaryString = '';
+	// this would limit to 255 subnets (8 borrowed bits), will fix later
+	powersOfTwo.forEach(function(powerOfTwo){
+		if (currentValue >= powerOfTwo) {
+			currentValue -= powerOfTwo;
+			binaryString += '1';
+		}
+
+		else {
+			binaryString += '0';
+		}
+	});
+
+	/*while(binaryString.length < bitsRequired) {
+		binaryString = '0' + binaryString;
+	}*/
+	binaryString = binaryString.substring(binaryString.length - bitsRequired);
+	return binaryString;
 
 }
 
