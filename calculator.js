@@ -13,7 +13,6 @@ function main(ipWithCIDR) {
 		octetArrayBinary.push(octetBinary);
 	});
 
-	// displayOctetArrayBinary(octetArrayBinary);
 	console.log('CIDR value given: /', CIDR);
 
 	// join the IP binary strings in the array into one and print binary IP
@@ -33,22 +32,33 @@ function main(ipWithCIDR) {
 
 	// get the network ID as a binary string and print it
 	var networkIdBinary = getNetworkId(ipBinary, netmask);
-	// console.log(networkIdBinary);
 
 	// get the network ID as a decimal array, print it
 	var networkIdDecimal = getDecimalForNetworkId(networkIdBinary);
-	// console.log(networkIdDecimal);
-
-	// get network ID as a decimal string, display it for user
-	var networkIdString = getIpAsString(networkIdDecimal);
-	document.getElementById('network-id').innerHTML = 'Network ID: ' + networkIdString;
-	console.log('Network ID: ', networkIdString);
+	displayNetworkId(networkIdDecimal);
 
 	// get the address range, display it for user
 	var addressRange = getAddressRange(networkIdBinary, CIDR);
-	document.getElementById('address-range').innerHTML = 'Address Range: ' + addressRange[0] + ' to ' + addressRange[1];
-	console.log('Address range: ', addressRange[0], '-', addressRange[1]);
+	displayAddressRange(addressRange);
+	
+}
 
+function displayNetworkId(networkIdDecimal) {
+	// get network ID as a decimal string, display it for user
+	var networkIdChild = document.createElement('li');
+	var networkIdString = getIpAsString(networkIdDecimal);
+	var networkIdText = document.createTextNode(networkIdString);
+	networkIdChild.appendChild(networkIdText);
+	document.getElementById('network-id-list').appendChild(networkIdChild);
+	console.log('Network ID: ', networkIdString);
+}
+
+function displayAddressRange(addressRange) {
+	var addressRangeChild = document.createElement('li');
+	var addressRangeText = document.createTextNode(addressRange[0] + ' to ' + addressRange[1]);
+	addressRangeChild.appendChild(addressRangeText);
+	document.getElementById('address-range-list').appendChild(addressRangeChild);
+	console.log('Address range: ', addressRange[0], '-', addressRange[1]);
 }
 
 function getBinaryStringForIP(octetDecimal){
@@ -158,14 +168,7 @@ function processNumberOfSubnets(selectedValue) {
 	// e.g. if we take 192.168.1.0/24 and borrow 1 bit, we get 2 subnets that are /25.
 	// the network IDs would then be 192.168.1.0 and 192.168.1.128 (borrowed bit is a 0 or 1, respectively). this also means it's a 0 or 1 in the netmask
 	var addressRanges = []; 
-}
-
-function displayOctetArrayBinary(octetArrayBinary) {
-	octetArrayBinary.forEach(function(octetBinary) {
-		console.log(octetBinary);
-	});
-}
-
-function displayNetworkRanges() {
+	var startingCIDR = CIDR;
+	var startingNetmask = getSubnetMaskFromCIDR(startingCIDR); //e.g. '11111111111111111111111100000000' for the /24 example above
 
 }
