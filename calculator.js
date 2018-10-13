@@ -257,6 +257,9 @@ function decimalToBinary(decimal, bitsRequired) {
 
 }
 
-function replaceAt(string, index, replacementText) {
-  return string.substring(0, index) + replacementText + string.substring(index + 1);
+function toggleAnswersVisible() {
+	var answers = document.getElementById("answers");
+	if (answers.style.visibility === "hidden") {
+		answers.style.visibility = "visible";
+	}
 }

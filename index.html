@@ -1,34 +1,43 @@
 <!DOCTYPE html>
 <html>
 <head>
+	<link href="https://fonts.googleapis.com/css?family=K2D" rel="stylesheet">
 	<link rel="stylesheet" type="text/css" href="style.css">
 	<title>Subnet Calculator</title>
 </head>
 <body>
-	<h2>Enter an IP address in CIDR notation (for example, 192.168.53.23/24) below to get the associated Network ID and address range.</h2>
+	<h2>Enter an IP address in CIDR notation (for example, 192.42.53.12/24) below to get the associated Network ID and address range.</h2>
 	<div class="ip">
-		<input type="text" id="ipAddress" onblur="main(ipAddress.value)">
+		<input type="text" id="ipAddress">
 	</div>
+	<h4>If the CIDR value isn't known, use the classful addressing scheme. Look at the first number in the IP address and find the corresponding CIDR value below.<br>
+	0 to 127 is Class A. Use /8.<br>
+	128 to 191 is Class B. Use /16.<br>
+	192 to 223 is Class C. Use /24.
+	</h4>
 	
-	<br>
 	<div class="subnet">
-		<h2>How many networks (subnets) do you need? Note: the number you choose will be rounded up to the nearest 
+		<h2>How many networks (subnets) do you need in your address space? If you aren't sure, you can leave this at the default of 1.
+		<h2>
+		<input id="numSubnets" type="number" min="1" value="1">
+		<h4>The number you choose will be rounded up to the nearest 
 		power of 2 to ensure there's an equal number of maximum hosts on all subnets. For example, if you select 6,
-		you'll get 8 subnets and could choose any 6 of these to use. The remaining subnets would be available if needed at a later date.</h2>
-		<input id="numSubnets" type="number" min="1" onblur="processSubnets(numSubnets.value)">
+		you'll get 8 subnets and could choose any 6 of these to use. The remaining subnets would be available if needed at a later date. Remember that the first and last address in each subnet are reserved for the Network ID and Broadcast Address, respectively.</h4>
 	</div>
 
-	<!-- 
-	<div class="calc-button">
-		<button onclick="main(ipAddress.value)">Calculate</button>
-		 look at CIDR number and only offer number of subnets according to host bits 
+	<div>
+		<button id="calc-button" onclick="main(ipAddress.value);processSubnets(numSubnets.value);toggleAnswersVisible();">Calculate</button>
 	</div>
-	-->
 	
-	<h2 id="network-id">Network ID(s):</h2>
-	<ul id="network-id-list"></ul>
-	<h2 id="address-range">Address Range(s):</h2>
-	<ul id="address-range-list"></ul>
+	<div id="answers">
+		<h2 id="network-id">Network ID(s):</h2>
+		<ul id="network-id-list"></ul>
+		<h2 id="address-range">Address Range(s):</h2>
+		<ul id="address-range-list"></ul>
+	</div>
+	<script type="text/javascript">
+		document.getElementById('answers').style.visibility = "hidden";
+	</script>
 	<script type="text/javascript" src="calculator.js"></script>
 	
 </body>
