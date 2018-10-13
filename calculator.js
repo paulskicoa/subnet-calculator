@@ -200,17 +200,25 @@ function processSubnets(selectedValue) {
 	// using the subnet mask, in the network ID, flip the bit in the position of the rightmost 1 of the mask (e.g. pos. 25 in the /26 mask above)
 	// that will be the new CIDR number - 1
 	var startNetId = startingNetworkId;
-	var nextNetworkId = replaceAt(startNetId, newCIDR - 1, '1'); // should give '11000000101010000000000100100000', 192.168.1.64
+	/*var nextNetworkId = replaceAt(startNetId, newCIDR - 1, '1'); // should give '11000000101010000000000100100000', 192.168.1.64
 	var nextNetworkIdDecimal = getDecimalForNetworkId(nextNetworkId);
-	displayNetworkId(nextNetworkIdDecimal);
+	displayNetworkId(nextNetworkIdDecimal);*/
 
 	var bitCombos = [];
-	// bitCombos.push('0'.repeat(bitsRequired - 1) + '1'); // e.g. '001' for 3 bits. this is the 2nd network ID
+	var nextNetId = startNetId;
+	var nextNetworkIdDecimal = 0;
 	// count up to 2**bitsRequired, pad or trim string length to bitsRequired as needed
 	for (var i = 1; i < numberOfSubnets; i++) {
 		bitCombos.push(decimalToBinary(i, bitsRequired));
 	}
 	console.log('Network ID combos to be added:', bitCombos);
+	bitCombos.forEach(function(bitCombo) {
+		nextNetId = startNetId.slice(0, startingCIDR) + bitCombo;
+		nextNetId = nextNetId + '0'.repeat(32 - nextNetId.length);
+		nextNetIdDecimal = getDecimalForNetworkId(nextNetId);
+		displayNetworkId(nextNetIdDecimal);
+	});
+
 }
 
 function decimalToBinary(decimal, bitsRequired) {
