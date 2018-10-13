@@ -1,6 +1,7 @@
 const powersOfTwo = [128, 64, 32, 16, 8, 4, 2, 1];
 // don't want global vars. fix this later.
 var CIDR = 0;
+var startingNetworkId = '';
 
 function main(ipWithCIDR) {
 	var octetArrayBinary = [];
@@ -30,10 +31,12 @@ function main(ipWithCIDR) {
 	var netmaskDecimal = getIpAsString(getDecimalFromBinaryIP(netmask));
 	console.log('Netmask given: ', netmaskDecimal);
 
-	// get the network ID as a binary string and print it
+	// get the network ID as a binary string
 	var networkIdBinary = getNetworkId(ipBinary, netmask);
+	console.log('Network ID (binary) :', networkIdBinary);
+	startingNetworkId = networkIdBinary;
 
-	// get the network ID as a decimal array, print it
+	// get the network ID as a decimal array
 	var networkIdDecimal = getDecimalForNetworkId(networkIdBinary);
 	displayNetworkId(networkIdDecimal);
 
@@ -44,7 +47,7 @@ function main(ipWithCIDR) {
 }
 
 function displayNetworkId(networkIdDecimal) {
-	// get network ID as a decimal string, display it for user
+	// takes network ID as a decimal string, display it for user
 	var networkIdChild = document.createElement('li');
 	var networkIdString = getIpAsString(networkIdDecimal);
 	var networkIdText = document.createTextNode(networkIdString);
@@ -153,7 +156,22 @@ function getAddressRange(networkIdBinary, CIDR) {
 	return addressRange;
 }
 
-function processNumberOfSubnets(selectedValue) {
+function processSubnets(selectedValue) {
+	// each time this runs, clear the entries from before
+	var networkIdList = document.getElementById('network-id-list');
+	var addressRangeList = document.getElementById('address-range-list');
+
+	while(networkIdList.firstChild) {
+		networkIdList.removeChild(networkIdList.firstChild);
+	}
+
+	while(addressRangeList.firstChild) {
+		addressRangeList.removeChild(addressRangeList.firstChild);
+	}
+
+	// display the first network ID
+	displayNetworkId(getDecimalForNetworkId(startingNetworkId));
+
 	// 32 - CIDR gives host bits and also how many could be borrowed for subnetting.
 	// n bits borrowed for subnetting gives max of 2^n subnets
 	// 0 bits -> 1 subnet, 1 bit 2 subnets, 2 bits 4 subnets, 3 bits 8 subnets, etc
@@ -165,10 +183,28 @@ function processNumberOfSubnets(selectedValue) {
 	console.log('Number of subnets to be created:', numberOfSubnets,'(using', bitsRequired, 'bits)');
 
 	// divide the address space as required. the borrowed bits will now be part of the network ID. 
-	// e.g. if we take 192.168.1.0/24 and borrow 1 bit, we get 2 subnets that are /25.
-	// the network IDs would then be 192.168.1.0 and 192.168.1.128 (borrowed bit is a 0 or 1, respectively). this also means it's a 0 or 1 in the netmask
+	// e.g. if we take 192.168.1.0/24 and borrow 2 bits, we get 4 subnets that are /26.
+	// the network IDs would then be 192.168.1.0, 192.168.1.64, 192.168.1.128, 192.168.1.192
+	// borrowed bits are from the 128 and 64 value places, and those IPs represent borrowed bit values 00, 01, 10, 11, respectively
+	// so 192.168.1.0 - 192.168.1.127 has that bit as a 0, and 192.168.1.128 - 192.168.1.255 has that bit as a 1
 	var addressRanges = []; 
 	var startingCIDR = CIDR;
 	var startingNetmask = getSubnetMaskFromCIDR(startingCIDR); //e.g. '11111111111111111111111100000000' for the /24 example above
 
+	// adjust the subnet mask by the number of bits required to make the subnets
+	var newCIDR = startingCIDR + bitsRequired;
+	var newNetmask = getSubnetMaskFromCIDR(newCIDR); //e.g. '11111111111111111111111111000000' for the /26 above
+	
+	// need to grab the starting network ID as a binary string. e.g. '11000000101010000000000100000000' for 192.168.1.0
+	// using the subnet mask, in the network ID, flip the bit in the position of the rightmost 1 of the mask (e.g. pos. 25 in the /26 mask above)
+	// that will be the new CIDR number - 1
+	var startNetId = startingNetworkId;
+	var nextNetworkId = replaceAt(startNetId, newCIDR - 1, '1'); // should give '11000000101010000000000100100000', 192.168.1.64
+	var nextNetworkIdDecimal = getDecimalForNetworkId(nextNetworkId);
+	displayNetworkId(nextNetworkIdDecimal);
+
+}
+
+function replaceAt(string, index, replacementText) {
+  return string.substring(0, index) + replacementText + string.substring(index + 1);
 }
