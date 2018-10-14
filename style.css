@@ -8,14 +8,6 @@ body {
 	background-color: #2C6BB1;
 }
 
-/* changes the glow when a field is selected */
-/* .form-control:focus {
-  color: #495057;
-  background-color: #fff;
-  border-color: #FC9900;
-  outline: none;
-} */
-
 h1.display-4, p.lead {
 	text-align: center;
 }
@@ -33,21 +25,29 @@ h1.display-4, p.lead {
 }
 
 .container {
-	width: 75%;
+	width: 70%;
 }
 
 .container-2 {
 	margin: 0 auto;
-	width: 75%;
+	width: 70%;
 }
 
 .calc-button {
 	text-align: center;
-	width: 75%;
+	width: 70%;
 	margin: 75px auto;
 }
 
 #calcButton {
-	background-color: #e9ecef;
+	background-color: white;
 	color: black;
+}
+
+div.jumbotron.jumbotron-fluid {
+	margin-bottom: 0px;
+}
+
+.card-deck {
+	justify-content: center;
 }

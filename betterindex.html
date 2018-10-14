@@ -6,27 +6,6 @@
 	<link href="https://fonts.googleapis.com/css?family=K2D" rel="stylesheet">
 	<link rel="stylesheet" type="text/css" href="style.css">
 	<title>Subnet Calculator</title>
-	<style type="text/css">
-		.animate {
-			animation-name: fade-out;
-			animation-duration: 1s;
-			animation-fill-mode: forwards;
-		}
-
-		@keyframes fade-out {
-			from {
-				opacity: 1;
-				margin: 0 auto;
-				width: 75%;
-			}
-
-			to {
-				opacity: 0;
-				margin: 0 auto;
-				width: 75%;
-			}
-		}
-	</style>
 </head>
 <body>
 	<div class="jumbotron jumbotron-fluid">
@@ -35,6 +14,43 @@
 	    <p class="lead">Tired of doing tedious IP subnetting calculations by hand? (Who isn't?) Just enter the IP, CIDR number, and how many subnets you want, and this tool will do the rest.</p>
   	</div>
 	</div>
+	<div class="card-deck" id="card-deck-id" hidden>
+		  <div class="card bg-light mb-3" style="max-width: 18rem;">
+			  <div class="card-header">Input Summary</div>
+			  <div class="card-body">
+			    <h5 class="card-title">Here's a review of what you entered.</h5>
+			    <p class="card-text">IP Address: 192.168.32.22</p>
+			    <p class="card-text">CIDR Value: 24</p>
+			    <p class="card-text">Number of Subnets: 1</p>
+			  </div>
+			</div>
+		  <div class="card bg-light mb-3" style="max-width: 18rem;">
+			  <div class="card-header">Network IDs</div>
+			  <div class="card-body">
+			    <p class="card-text">Subnet 1: 192.168.1.0</p>
+			    <p class="card-text">Subnet 2: 192.168.1.64</p>
+			    <p class="card-text">Subnet 3: 192.168.1.128</p>
+			    <p class="card-text">Subnet 4: 192.168.1.192</p>
+			  </div>
+			</div>
+			<div class="card bg-light mb-3" style="max-width: 18rem;">
+			  <div class="card-header">Usable Address Ranges</div>
+			  <div class="card-body">
+			    <p class="card-text">Subnet 1: 192.168.1.1 to 192.168.1.62</p>
+			    <p class="card-text">Subnet 2: 192.168.1.65 to 192.168.1.93</p>
+			    <p class="card-text">Subnet 3: 192.168.1.95 to 192.168.1.123</p>
+			    <p class="card-text">Subnet 4: 192.168.1.130 to 192.168.1.140</p>
+			  </div>
+			</div>
+			<div class="card bg-light mb-3" style="max-width: 18rem;">
+			  <div class="card-header">Statistics</div>
+			  <div class="card-body">
+			    <p class="card-text">Hosts Per Subnet: 64</p>
+			    <p class="card-text">Usable Hosts Per Subnet: 62</p>
+			    <p class="card-text">Total Usable Hosts: 255</p>
+			  </div>
+			</div>
+	</div>		
 	<div class="container-2">
 		<div class="input-group">
 		  <div class="input-group-prepend">
@@ -50,7 +66,7 @@
 		</div>
 	</div>
 	<div class="calc-button">
-		<button type="button" class="btn btn-secondary" id="calcButton" onclick="fadeOut()">See Results</button>
+		<button type="button" class="btn btn-secondary" id="calcButton" onclick="transitionForward()">Calculate</button>
 	</div>
 	<script type="text/javascript" src="calculator++.js"></script>
 </body>
