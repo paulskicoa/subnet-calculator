@@ -53,6 +53,7 @@ function displayNetworkId(networkIdDecimal) {
 	var networkIdString = getIpAsString(networkIdDecimal);
 	var networkIdText = document.createTextNode(networkIdString);
 	networkIdChild.appendChild(networkIdText);
+	networkIdChild.className = 'list-group-item';
 	document.getElementById('network-id-list').appendChild(networkIdChild);
 	console.log('Network ID: ', networkIdString);
 }
@@ -61,6 +62,7 @@ function displayAddressRange(addressRange) {
 	var addressRangeChild = document.createElement('li');
 	var addressRangeText = document.createTextNode(addressRange[0] + ' to ' + addressRange[1]);
 	addressRangeChild.appendChild(addressRangeText);
+	addressRangeChild.className = 'list-group-item';
 	document.getElementById('address-range-list').appendChild(addressRangeChild);
 	console.log('Address range: ', addressRange[0], '-', addressRange[1]);
 }
@@ -257,9 +259,29 @@ function decimalToBinary(decimal, bitsRequired) {
 
 }
 
-function toggleAnswersVisible() {
-	var answers = document.getElementById("answers");
-	if (answers.style.visibility === "hidden") {
-		answers.style.visibility = "visible";
+function transitionForward() {
+	// hide the fields
+	var containerTarget = document.getElementsByClassName('container-2');
+	var containerLength = containerTarget.length;
+	for (var i = 0; i < containerLength; i++) {
+		containerTarget[i].style.display = 'none';
 	}
+
+	// remove calculate button
+	document.getElementById('calcButton').style.display = 'none';
+
+	//
+
+	// show back button
+
+	// show the results
+	var cardsTarget = document.getElementsByClassName('card-deck');
+	var cardsLength = cardsTarget.length;
+	for (var i = 0; i < cardsLength; i++) {
+		cardsTarget[i].removeAttribute('hidden');	
+	}
+}
+
+function transitionBackward () {
+
 }

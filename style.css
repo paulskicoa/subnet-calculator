@@ -25,17 +25,17 @@ h1.display-4, p.lead {
 }
 
 .container {
-	width: 70%;
+	width: 60%;
 }
 
 .container-2 {
 	margin: 0 auto;
-	width: 70%;
+	width: 60%;
 }
 
 .calc-button {
 	text-align: center;
-	width: 70%;
+	width: 80%;
 	margin: 75px auto;
 }
 
@@ -50,4 +50,24 @@ div.jumbotron.jumbotron-fluid {
 
 .card-deck {
 	justify-content: center;
+}
+
+.author-info {
+	color: white;
+	text-align: center;
+}
+ .card-header {
+	text-align: center;
+}
+ .card-body {
+	text-align: center;
+	color: black;
+}
+ .scroll {
+	max-height: 20rem;
+    overflow-y: auto;
+}
+
+ul {
+	list-style-type: none;
 }
