@@ -50,8 +50,12 @@ function displayInputSummary(item) {
 	document.getElementById('input-summary').appendChild(cardListItem);
 }
 
-function displayStatistics() {
-
+function displayStatistics(item) {
+	var cardListItem = document.createElement('li');
+	var cardListItemText = document.createTextNode(item);
+	cardListItem.appendChild(cardListItemText);
+	cardListItem.className = 'list-group-item';
+	document.getElementById('statistics').appendChild(cardListItem);
 }
 
 function displayNetworkId(networkIdDecimal, newCIDR) {
@@ -203,10 +207,21 @@ function getUsableAddressRanges(networkIdsBinary, newCIDR) {
 	return usableAddressRanges;
 }
 
+function getNumUsableHostsPerSubnet(newCIDR){
+	var numHostBits = 32 - newCIDR;
+	var hostsPerSubnet = (2**numHostBits) - 2; // subtract one for network id and another for broadcast address
+	return hostsPerSubnet;
+}
+
+function getNumTotalAssignableIps(numberOfSubnets, hostsPerSubnet) {
+	return numberOfSubnets * hostsPerSubnet;
+}
+
 function clearResults() {
 	var networkIdList = document.getElementById('network-id-list');
 	var addressRangeList = document.getElementById('address-range-list');
 	var inputSummaryList = document.getElementById('input-summary');
+	var statisticsList = document.getElementById('statistics');
 
 	while(networkIdList.firstChild) {
 		networkIdList.removeChild(networkIdList.firstChild);
@@ -219,6 +234,10 @@ function clearResults() {
 	while(inputSummaryList.firstChild) {
 		inputSummaryList.removeChild(inputSummaryList.firstChild);
 	}
+
+	while(statisticsList.firstChild) {
+		statistics.removeChild(statistics.firstChild);
+	}	
 }
 
 function processSubnets(selectedValue) {
@@ -298,6 +317,9 @@ function processSubnets(selectedValue) {
 	var usableAddressRanges = getUsableAddressRanges(networkIdsBinary, newCIDR);
 	usableAddressRanges.forEach(function(addressRange){
 		displayAddressRange(addressRange)});
+	var numHostsPerSubnet = getNumUsableHostsPerSubnet(newCIDR);
+	displayStatistics('Max ' + numHostsPerSubnet + ' hosts per subnet');
+	displayStatistics(getNumTotalAssignableIps(numHostsPerSubnet, numberOfSubnets) + ' total assignable IPs');
 }
 
 function decimalToBinary(decimal, bitsRequired) {
