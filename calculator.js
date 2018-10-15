@@ -1,14 +1,12 @@
 const powersOfTwo = [128, 64, 32, 16, 8, 4, 2, 1];
-// don't want global vars. fix this later.
-var CIDR = 0;
-var startingNetworkId = '';
 
-function main(ipWithCIDR) {
+function validateInput(ipWithCIDR, numberOfSubnets) {
 	clearResults();
+	// ensure the Ip and CIDR are of the form 'X.X.X.X/Y' with X between 0 and 255, Y between 0 and 32. there may be spaces between *.X and /Y also.
 	var octetArrayBinary = [];
 	var ipWithCIDRArray = ipWithCIDR.split('/'); // e.g. '192.168.1.0/24' becomes [192.168.1.0, 24]
 	var octetArrayDecimal = ipWithCIDRArray[0].split('.'); // get just the IP portion from the array and split it into octets
-	CIDR = parseInt(ipWithCIDRArray[1], 10); //get just the CIDR portion from the array, convert to int with base 10 (decimal)
+	var CIDR = parseInt(ipWithCIDRArray[1], 10); //get just the CIDR portion from the array, convert to int with base 10 (decimal)
 
 	octetArrayDecimal.forEach(function(octetDecimal) {
 		var octetBinary = getBinaryStringForIP(octetDecimal);
@@ -39,7 +37,92 @@ function main(ipWithCIDR) {
 	// get the network ID as a binary string
 	var networkIdBinary = getNetworkId(ipBinary, netmask);
 	console.log('Network ID (binary) :', networkIdBinary);
-	startingNetworkId = networkIdBinary;	
+	var startingNetworkId = networkIdBinary;
+
+	processSubnets(numberOfSubnets, CIDR, startingNetworkId);
+	transitionForward();	
+}
+
+function processSubnets(selectedValue, CIDR, startingNetworkId) {
+	if (selectedValue === '') { // user left it blank, defaults to 1
+		selectedValue = '1';
+	}
+	// holds the network ids for all subnets (in decimal)
+	var networkIds = [];
+	var networkIdsBinary = []; // for use with the getUsableAddressRanges() function
+
+	// holds address ranges for all subnets, without subtracting out the ones for network ID and broadcast
+	var addressRanges = [];
+
+	// convert the first network ID to a string like '192.168.1.0', add it to the array, display it
+	var formattedNetworkId = getIpAsString(getDecimalForNetworkId(startingNetworkId));
+	networkIds.push(formattedNetworkId);
+	
+
+	// 32 - CIDR gives host bits and also how many could be borrowed for subnetting.
+	// n bits borrowed for subnetting gives max of 2^n subnets
+	// 0 bits -> 1 subnet, 1 bit 2 subnets, 2 bits 4 subnets, 3 bits 8 subnets, etc
+	// this uses my formula N = ceil(log_2(n)) to calculate bits N required to create at least n subnets
+	var selectedValue = parseInt(selectedValue);
+	var bitsRequired = Math.ceil((Math.log2(selectedValue)));
+	var numberOfSubnets = 2 ** bitsRequired; // e.g. 2^3 = 8 subnets if the user-selected value of n was 6
+
+	if (selectedValue === numberOfSubnets) {
+		displayInputSummary('Subnets: ' + selectedValue);
+	}
+	else {
+		displayInputSummary('Subnets: ' + selectedValue + ', adjusted to ' + numberOfSubnets);
+	}
+	
+	console.log('Number of subnets selected:', selectedValue)
+	console.log('Number of subnets to be created:', numberOfSubnets,'(using', bitsRequired, 'bits)');
+
+	// divide the address space as required. the borrowed bits will now be part of the network ID. 
+	// e.g. if we take 192.168.1.0/24 and borrow 2 bits, we get 4 subnets that are /26.
+	// the network IDs would then be 192.168.1.0, 192.168.1.64, 192.168.1.128, 192.168.1.192
+	// borrowed bits are from the 128 and 64 value places, and those IPs represent borrowed bit values 00, 01, 10, 11, respectively
+	// so 192.168.1.0 - 192.168.1.127 has that bit as a 0, and 192.168.1.128 - 192.168.1.255 has that bit as a 1
+	// or you could have borrowed bit values of 000, 001, 010, 011, 100, 101, 110, 111 for 3 bits, etc 
+	var startingCIDR = CIDR;
+	var startingNetmask = getSubnetMaskFromCIDR(startingCIDR); //e.g. '11111111111111111111111100000000' for the /24 example above
+
+	// adjust the subnet mask by the number of bits required to make the subnets
+	var newCIDR = startingCIDR + bitsRequired;
+	var newNetmask = getSubnetMaskFromCIDR(newCIDR); //e.g. '11111111111111111111111111000000' for the /26 above
+	
+	// need to grab the starting network ID as a binary string. e.g. '11000000101010000000000100000000' for 192.168.1.0
+	// using the subnet mask, in the network ID, flip the bit in the position of the rightmost 1 of the mask (e.g. pos. 25 in the /26 mask above)
+	// that will be the new CIDR number - 1
+	// this handles the network IDs
+	var startNetId = startingNetworkId;
+	displayNetworkId(getDecimalForNetworkId(startingNetworkId), newCIDR);
+	networkIdsBinary.push(startNetId);
+	// store the first address range
+	addressRanges.push(getAddressRange(startNetId, newCIDR)); // for if we ever want the raw address ranges. unused for now.
+	var bitCombos = [];
+	var nextNetId = startNetId;
+	var nextNetworkIdDecimal = 0;
+	// count up to 2**bitsRequired (num subnets), pad or trim string length to bitsRequired as needed
+	for (var i = 1; i < numberOfSubnets; i++) {
+		bitCombos.push(decimalToBinary(i, bitsRequired));
+	}
+	console.log('Network ID combos to be added:', bitCombos);
+	bitCombos.forEach(function(bitCombo) {
+		nextNetId = startNetId.slice(0, startingCIDR) + bitCombo;
+		nextNetId = nextNetId + '0'.repeat(32 - nextNetId.length);
+		networkIdsBinary.push(nextNetId);
+		addressRanges.push(getAddressRange(nextNetId, newCIDR)); // for if we ever want the raw address ranges. unused for now.
+		nextNetIdDecimal = getDecimalForNetworkId(nextNetId);
+		networkIds.push(getIpAsString(nextNetIdDecimal));
+		displayNetworkId(nextNetIdDecimal, newCIDR);
+	});
+	console.log('Network IDs:', networkIds);
+	var usableAddressRanges = getUsableAddressRanges(networkIdsBinary, newCIDR);
+	usableAddressRanges.forEach(function(addressRange){
+		displayAddressRange(addressRange)});
+	var numHostsPerSubnet = getNumUsableHostsPerSubnet(newCIDR);
+	displayStatistics('Max ' + numHostsPerSubnet + ' hosts per subnet');
+	displayStatistics(getNumTotalAssignableIps(numHostsPerSubnet, numberOfSubnets) + ' total assignable IPs');
 }
 
 function displayInputSummary(item) {
@@ -238,88 +321,6 @@ function clearResults() {
 	while(statisticsList.firstChild) {
 		statistics.removeChild(statistics.firstChild);
 	}	
-}
-
-function processSubnets(selectedValue) {
-	if (selectedValue === '') { // user left it blank, defaults to 1
-		selectedValue = '1';
-	}
-	// holds the network ids for all subnets (in decimal)
-	var networkIds = [];
-	var networkIdsBinary = []; // for use with the getUsableAddressRanges() function
-
-	// holds address ranges for all subnets, without subtracting out the ones for network ID and broadcast
-	var addressRanges = [];
-
-	// convert the first network ID to a string like '192.168.1.0', add it to the array, display it
-	var formattedNetworkId = getIpAsString(getDecimalForNetworkId(startingNetworkId));
-	networkIds.push(formattedNetworkId);
-	
-
-	// 32 - CIDR gives host bits and also how many could be borrowed for subnetting.
-	// n bits borrowed for subnetting gives max of 2^n subnets
-	// 0 bits -> 1 subnet, 1 bit 2 subnets, 2 bits 4 subnets, 3 bits 8 subnets, etc
-	// this uses my formula N = ceil(log_2(n)) to calculate bits N required to create at least n subnets
-	var selectedValue = parseInt(selectedValue);
-	var bitsRequired = Math.ceil((Math.log2(selectedValue)));
-	var numberOfSubnets = 2 ** bitsRequired; // e.g. 2^3 = 8 subnets if the user-selected value of n was 6
-
-	if (selectedValue === numberOfSubnets) {
-		displayInputSummary('Subnets: ' + selectedValue);
-	}
-	else {
-		displayInputSummary('Subnets: ' + selectedValue + ', adjusted to ' + numberOfSubnets);
-	}
-	
-	console.log('Number of subnets selected:', selectedValue)
-	console.log('Number of subnets to be created:', numberOfSubnets,'(using', bitsRequired, 'bits)');
-
-	// divide the address space as required. the borrowed bits will now be part of the network ID. 
-	// e.g. if we take 192.168.1.0/24 and borrow 2 bits, we get 4 subnets that are /26.
-	// the network IDs would then be 192.168.1.0, 192.168.1.64, 192.168.1.128, 192.168.1.192
-	// borrowed bits are from the 128 and 64 value places, and those IPs represent borrowed bit values 00, 01, 10, 11, respectively
-	// so 192.168.1.0 - 192.168.1.127 has that bit as a 0, and 192.168.1.128 - 192.168.1.255 has that bit as a 1
-	// or you could have borrowed bit values of 000, 001, 010, 011, 100, 101, 110, 111 for 3 bits, etc 
-	var startingCIDR = CIDR;
-	var startingNetmask = getSubnetMaskFromCIDR(startingCIDR); //e.g. '11111111111111111111111100000000' for the /24 example above
-
-	// adjust the subnet mask by the number of bits required to make the subnets
-	var newCIDR = startingCIDR + bitsRequired;
-	var newNetmask = getSubnetMaskFromCIDR(newCIDR); //e.g. '11111111111111111111111111000000' for the /26 above
-	
-	// need to grab the starting network ID as a binary string. e.g. '11000000101010000000000100000000' for 192.168.1.0
-	// using the subnet mask, in the network ID, flip the bit in the position of the rightmost 1 of the mask (e.g. pos. 25 in the /26 mask above)
-	// that will be the new CIDR number - 1
-	// this handles the network IDs
-	var startNetId = startingNetworkId;
-	displayNetworkId(getDecimalForNetworkId(startingNetworkId), newCIDR);
-	networkIdsBinary.push(startNetId);
-	// store the first address range
-	addressRanges.push(getAddressRange(startNetId, newCIDR)); // for if we ever want the raw address ranges. unused for now.
-	var bitCombos = [];
-	var nextNetId = startNetId;
-	var nextNetworkIdDecimal = 0;
-	// count up to 2**bitsRequired (num subnets), pad or trim string length to bitsRequired as needed
-	for (var i = 1; i < numberOfSubnets; i++) {
-		bitCombos.push(decimalToBinary(i, bitsRequired));
-	}
-	console.log('Network ID combos to be added:', bitCombos);
-	bitCombos.forEach(function(bitCombo) {
-		nextNetId = startNetId.slice(0, startingCIDR) + bitCombo;
-		nextNetId = nextNetId + '0'.repeat(32 - nextNetId.length);
-		networkIdsBinary.push(nextNetId);
-		addressRanges.push(getAddressRange(nextNetId, newCIDR)); // for if we ever want the raw address ranges. unused for now.
-		nextNetIdDecimal = getDecimalForNetworkId(nextNetId);
-		networkIds.push(getIpAsString(nextNetIdDecimal));
-		displayNetworkId(nextNetIdDecimal, newCIDR);
-	});
-	console.log('Network IDs:', networkIds);
-	var usableAddressRanges = getUsableAddressRanges(networkIdsBinary, newCIDR);
-	usableAddressRanges.forEach(function(addressRange){
-		displayAddressRange(addressRange)});
-	var numHostsPerSubnet = getNumUsableHostsPerSubnet(newCIDR);
-	displayStatistics('Max ' + numHostsPerSubnet + ' hosts per subnet');
-	displayStatistics(getNumTotalAssignableIps(numHostsPerSubnet, numberOfSubnets) + ' total assignable IPs');
 }
 
 function decimalToBinary(decimal, bitsRequired) {
