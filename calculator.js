@@ -39,15 +39,7 @@ function main(ipWithCIDR) {
 	// get the network ID as a binary string
 	var networkIdBinary = getNetworkId(ipBinary, netmask);
 	console.log('Network ID (binary) :', networkIdBinary);
-	startingNetworkId = networkIdBinary;
-
-	// get the network ID as a decimal array
-	/*var networkIdDecimal = getDecimalForNetworkId(networkIdBinary);
-	// displayNetworkId(networkIdDecimal);
-
-	// get the address range, display it for user
-	var addressRange = getAddressRange(networkIdBinary, CIDR);*/
-	
+	startingNetworkId = networkIdBinary;	
 }
 
 function displayInputSummary(item) {
@@ -62,10 +54,13 @@ function displayStatistics() {
 
 }
 
-function displayNetworkId(networkIdDecimal) {
-	// takes network ID as a decimal string, display it for user
+function displayNetworkId(networkIdDecimal, newCIDR) {
+	// takes network ID as a decimal array, display it for user
+	// more common to display e.g. 10.3.0.0/16 as just 10.3/16, so this will do that 
 	var networkIdChild = document.createElement('li');
 	var networkIdString = getIpAsString(networkIdDecimal);
+	var regex = /([0-9]+)[\.0]+$/;
+	networkIdString = networkIdString.replace(regex, '$1') + '/' + newCIDR;
 	var networkIdText = document.createTextNode(networkIdString);
 	networkIdChild.appendChild(networkIdText);
 	networkIdChild.className = 'list-group-item';
@@ -240,7 +235,7 @@ function processSubnets(selectedValue) {
 	// convert the first network ID to a string like '192.168.1.0', add it to the array, display it
 	var formattedNetworkId = getIpAsString(getDecimalForNetworkId(startingNetworkId));
 	networkIds.push(formattedNetworkId);
-	displayNetworkId(getDecimalForNetworkId(startingNetworkId));
+	
 
 	// 32 - CIDR gives host bits and also how many could be borrowed for subnetting.
 	// n bits borrowed for subnetting gives max of 2^n subnets
@@ -278,6 +273,7 @@ function processSubnets(selectedValue) {
 	// that will be the new CIDR number - 1
 	// this handles the network IDs
 	var startNetId = startingNetworkId;
+	displayNetworkId(getDecimalForNetworkId(startingNetworkId), newCIDR);
 	networkIdsBinary.push(startNetId);
 	// store the first address range
 	addressRanges.push(getAddressRange(startNetId, newCIDR)); // for if we ever want the raw address ranges. unused for now.
@@ -296,7 +292,7 @@ function processSubnets(selectedValue) {
 		addressRanges.push(getAddressRange(nextNetId, newCIDR)); // for if we ever want the raw address ranges. unused for now.
 		nextNetIdDecimal = getDecimalForNetworkId(nextNetId);
 		networkIds.push(getIpAsString(nextNetIdDecimal));
-		displayNetworkId(nextNetIdDecimal);
+		displayNetworkId(nextNetIdDecimal, newCIDR);
 	});
 	console.log('Network IDs:', networkIds);
 	var usableAddressRanges = getUsableAddressRanges(networkIdsBinary, newCIDR);
