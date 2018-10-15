@@ -63,8 +63,8 @@ function displayNetworkId(networkIdDecimal, newCIDR) {
 	// more common to display e.g. 10.3.0.0/16 as just 10.3/16, so this will do that 
 	var networkIdChild = document.createElement('li');
 	var networkIdString = getIpAsString(networkIdDecimal);
-	var regex = /([0-9]+)[\.0]+$/;
-	networkIdString = networkIdString.replace(regex, '$1') + '/' + newCIDR;
+	var regex = /(\.0)+$/;
+	networkIdString = networkIdString.replace(regex, '') + '/' + newCIDR;
 	var networkIdText = document.createTextNode(networkIdString);
 	networkIdChild.appendChild(networkIdText);
 	networkIdChild.className = 'list-group-item';
