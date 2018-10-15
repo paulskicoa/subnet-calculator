@@ -58,9 +58,10 @@ function displayNetworkId(networkIdDecimal) {
 	console.log('Network ID: ', networkIdString);
 }
 
+// no conversion with this function. Address range should already be in decimal
 function displayAddressRange(addressRange) {
 	var addressRangeChild = document.createElement('li');
-	var addressRangeText = document.createTextNode(addressRange[0] + ' to ' + addressRange[1]);
+	var addressRangeText = document.createTextNode(addressRange[0] + ' to\n' + addressRange[1]);
 	addressRangeChild.appendChild(addressRangeText);
 	addressRangeChild.className = 'list-group-item';
 	document.getElementById('address-range-list').appendChild(addressRangeChild);
@@ -159,6 +160,39 @@ function getAddressRange(networkIdBinary, CIDR) {
 	return addressRange;
 }
 
+// this subtracts out the first and last IPs in each subnet, as those are reserved for the network ID and broadcast addresses and aren't assignable
+// networkIdsBinary is an array
+// all host bits are 0 for the network ID, so to get the first usable address on a subnet, we should make the host bits all 0s ending in 1
+// all host bits are 1 for the broadcast addr, so to get the last usable address on a subnet, make the host bits all 1s ending in 0
+// e.g. 192.168.1.0, 192.168.1.32 should become 192.168.1.1 to 192.168.1.30 and 192.168.1.33 to ...
+function getUsableAddressRanges(networkIdsBinary, newCIDR) {
+	var numHostBits = 32 - newCIDR;
+	var usableAddressRanges = []; // should be an array of arrays, like [['192.168.1.1', '192.168.1.X'], ['192.168.1.X+1', '192.168.1.Y']...]
+	var addressPair = []; // first and last usable addresses in each subnet. the above is an array of these. this will get reused in the for loop
+	var tempNetId = ''; // temp string to hold a network ID during the calculation
+	var firstIp = ''; // holds the first address in each pair
+	var secondIp = ''; // holds the second address in each pair
+	for (var i = 0; i < networkIdsBinary.length; i++) {
+		addressPair = [];
+		// make host bits all 0s ending in 1 for first address
+		tempNetId = networkIdsBinary[i].substring(0, newCIDR); // 2nd param, end index, is not inclusive
+		firstIp = tempNetId + '0'.repeat(numHostBits - 1) + '1';
+
+		// make host bits all 1s ending in 0 for last address
+		// debugger;
+		secondIp = tempNetId + '1'.repeat(numHostBits - 1) + '0';
+
+		// convert both IPs to decimal strings
+		firstIp = getIpAsString(getDecimalFromBinaryIP(firstIp));
+		secondIp = getIpAsString(getDecimalFromBinaryIP(secondIp));
+
+		addressPair.push(firstIp);
+		addressPair.push(secondIp);
+		usableAddressRanges.push(addressPair);
+	}
+	return usableAddressRanges;
+}
+
 function clearResults() {
 	var networkIdList = document.getElementById('network-id-list');
 	var addressRangeList = document.getElementById('address-range-list');
@@ -176,8 +210,12 @@ function processSubnets(selectedValue) {
 	// each time this runs, clear the entries from before
 	clearResults();
 
-	// holds the network ids for all subnets
+	// holds the network ids for all subnets (in decimal)
 	var networkIds = [];
+	var networkIdsBinary = []; // for use with the getUsableAddressRanges() function
+
+	// holds address ranges for all subnets, without subtracting out the ones for network ID and broadcast
+	var addressRanges = [];
 
 	// convert the first network ID to a string like '192.168.1.0', add it to the array, display it
 	var formattedNetworkId = getIpAsString(getDecimalForNetworkId(startingNetworkId));
@@ -199,8 +237,7 @@ function processSubnets(selectedValue) {
 	// the network IDs would then be 192.168.1.0, 192.168.1.64, 192.168.1.128, 192.168.1.192
 	// borrowed bits are from the 128 and 64 value places, and those IPs represent borrowed bit values 00, 01, 10, 11, respectively
 	// so 192.168.1.0 - 192.168.1.127 has that bit as a 0, and 192.168.1.128 - 192.168.1.255 has that bit as a 1
-	// or you could have borrowed bit values of 000, 001, 010, 011, 100, 101, 110, 111 for 3 bits, etc
-	var addressRanges = []; 
+	// or you could have borrowed bit values of 000, 001, 010, 011, 100, 101, 110, 111 for 3 bits, etc 
 	var startingCIDR = CIDR;
 	var startingNetmask = getSubnetMaskFromCIDR(startingCIDR); //e.g. '11111111111111111111111100000000' for the /24 example above
 
@@ -213,8 +250,9 @@ function processSubnets(selectedValue) {
 	// that will be the new CIDR number - 1
 	// this handles the network IDs
 	var startNetId = startingNetworkId;
-	// display the first address range
-	displayAddressRange(getAddressRange(startNetId, newCIDR));
+	networkIdsBinary.push(startNetId);
+	// store the first address range
+	addressRanges.push(getAddressRange(startNetId, newCIDR)); // for if we ever want the raw address ranges. unused for now.
 	var bitCombos = [];
 	var nextNetId = startNetId;
 	var nextNetworkIdDecimal = 0;
@@ -226,13 +264,16 @@ function processSubnets(selectedValue) {
 	bitCombos.forEach(function(bitCombo) {
 		nextNetId = startNetId.slice(0, startingCIDR) + bitCombo;
 		nextNetId = nextNetId + '0'.repeat(32 - nextNetId.length);
-		// pass the binary network ID with the new CIDR value to getAddressRange(), then display it
-		displayAddressRange(getAddressRange(nextNetId, newCIDR));
+		networkIdsBinary.push(nextNetId);
+		addressRanges.push(getAddressRange(nextNetId, newCIDR)); // for if we ever want the raw address ranges. unused for now.
 		nextNetIdDecimal = getDecimalForNetworkId(nextNetId);
 		networkIds.push(getIpAsString(nextNetIdDecimal));
 		displayNetworkId(nextNetIdDecimal);
 	});
 	console.log('Network IDs:', networkIds);
+	var usableAddressRanges = getUsableAddressRanges(networkIdsBinary, newCIDR);
+	usableAddressRanges.forEach(function(addressRange){
+		displayAddressRange(addressRange)});
 }
 
 function decimalToBinary(decimal, bitsRequired) {
@@ -269,8 +310,6 @@ function transitionForward() {
 
 	// remove calculate button
 	document.getElementById('calcButton').style.display = 'none';
-
-	//
 
 	// show back button
 
