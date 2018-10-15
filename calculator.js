@@ -15,14 +15,17 @@ function main(ipWithCIDR) {
 		octetArrayBinary.push(octetBinary);
 	});
 
-	console.log('CIDR value given: /', CIDR);
-
 	// join the IP binary strings in the array into one and print binary IP
 	var ipBinary = octetArrayBinary.join('');
 	console.log('IP address given (binary):', ipBinary);
 
 	// print IP in decimal
-	console.log('IP address given: ', getIpAsString(getDecimalFromBinaryIP(ipBinary)));
+	var decimalIpString = getIpAsString(getDecimalFromBinaryIP(ipBinary));
+	displayInputSummary('IP: ' + decimalIpString);
+	console.log('IP address given: ', decimalIpString);
+
+	displayInputSummary('CIDR: /' + CIDR);
+	console.log('CIDR value given: /', CIDR);
 
 	// print the subnet mask in binary
 	var netmask = getSubnetMaskFromCIDR(CIDR);
@@ -30,6 +33,7 @@ function main(ipWithCIDR) {
 
 	// print the subnet mask in decimal
 	var netmaskDecimal = getIpAsString(getDecimalFromBinaryIP(netmask));
+	// displayInputSummary('Subnet Mask: ' + netmaskDecimal);
 	console.log('Netmask given: ', netmaskDecimal);
 
 	// get the network ID as a binary string
@@ -38,13 +42,24 @@ function main(ipWithCIDR) {
 	startingNetworkId = networkIdBinary;
 
 	// get the network ID as a decimal array
-	var networkIdDecimal = getDecimalForNetworkId(networkIdBinary);
-	displayNetworkId(networkIdDecimal);
+	/*var networkIdDecimal = getDecimalForNetworkId(networkIdBinary);
+	// displayNetworkId(networkIdDecimal);
 
 	// get the address range, display it for user
-	var addressRange = getAddressRange(networkIdBinary, CIDR);
-	displayAddressRange(addressRange);
+	var addressRange = getAddressRange(networkIdBinary, CIDR);*/
 	
+}
+
+function displayInputSummary(item) {
+	var cardListItem = document.createElement('li');
+	var cardListItemText = document.createTextNode(item);
+	cardListItem.appendChild(cardListItemText);
+	cardListItem.className = 'list-group-item';
+	document.getElementById('input-summary').appendChild(cardListItem);
+}
+
+function displayStatistics() {
+
 }
 
 function displayNetworkId(networkIdDecimal) {
@@ -196,6 +211,7 @@ function getUsableAddressRanges(networkIdsBinary, newCIDR) {
 function clearResults() {
 	var networkIdList = document.getElementById('network-id-list');
 	var addressRangeList = document.getElementById('address-range-list');
+	var inputSummaryList = document.getElementById('input-summary');
 
 	while(networkIdList.firstChild) {
 		networkIdList.removeChild(networkIdList.firstChild);
@@ -204,12 +220,16 @@ function clearResults() {
 	while(addressRangeList.firstChild) {
 		addressRangeList.removeChild(addressRangeList.firstChild);
 	}
+
+	while(inputSummaryList.firstChild) {
+		inputSummaryList.removeChild(inputSummaryList.firstChild);
+	}
 }
 
 function processSubnets(selectedValue) {
-	// each time this runs, clear the entries from before
-	clearResults();
-
+	if (selectedValue === '') { // user left it blank, defaults to 1
+		selectedValue = '1';
+	}
 	// holds the network ids for all subnets (in decimal)
 	var networkIds = [];
 	var networkIdsBinary = []; // for use with the getUsableAddressRanges() function
@@ -229,6 +249,14 @@ function processSubnets(selectedValue) {
 	var selectedValue = parseInt(selectedValue);
 	var bitsRequired = Math.ceil((Math.log2(selectedValue)));
 	var numberOfSubnets = 2 ** bitsRequired; // e.g. 2^3 = 8 subnets if the user-selected value of n was 6
+
+	if (selectedValue === numberOfSubnets) {
+		displayInputSummary('Subnets: ' + selectedValue);
+	}
+	else {
+		displayInputSummary('Subnets: ' + selectedValue + ', adjusted to ' + numberOfSubnets);
+	}
+	
 	console.log('Number of subnets selected:', selectedValue)
 	console.log('Number of subnets to be created:', numberOfSubnets,'(using', bitsRequired, 'bits)');
 

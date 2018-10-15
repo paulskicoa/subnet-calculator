@@ -18,12 +18,8 @@
 		  <div class="card bg-light mb-3" style="max-width: 18rem;">
 			  <div class="card-header">Input Summary</div>
 			  <div class="card-body scroll">
-				    <ul class="list-group list-group-flush">
-					  <li class="list-group-item">Here's a review of what you entered.</li>
-					  <li class="list-group-item">Dapibus ac facilisis in</li>
-					  <li class="list-group-item">Morbi leo risus</li>
-					  <li class="list-group-item">Porta ac consectetur ac</li>
-					  <li class="list-group-item">Vestibulum at eros</li>
+				    <ul class="list-group list-group-flush" id="input-summary">
+					  <li class="list-group-item"><strong>Here's a review of what you entered.</strong></li>
 					</ul>
 			   </div>
 			  </div>
@@ -31,28 +27,20 @@
 			  <div class="card-header">Network IDs</div>
 			  <div class="card-body scroll">
 				    <ul class="list-group list-group-flush" id="network-id-list">
-					  <li class="list-group-item">X.X.X.X</li>
-					  <li class="list-group-item">X.X.X.X</li>
-					  <li class="list-group-item">X.X.X.X</li>
-					  <li class="list-group-item">X.X.X.X</li>
 					</ul>
 			   </div>
 			  </div>
 			<div class="card bg-light mb-3" style="max-width: 18rem;">
-			  <div class="card-header">Usable Address Ranges</div>
+			  <div class="card-header">Assignable Address Ranges</div>
 			  <div class="card-body scroll">
 				    <ul class="list-group list-group-flush" id="address-range-list">
-					  <li class="list-group-item">X.X.X.X to<br>X.X.X.X</li>
-					  <li class="list-group-item">X.X.X.X to<br>X.X.X.X</li>
-					  <li class="list-group-item">X.X.X.X to<br>X.X.X.X</li>
-					  <li class="list-group-item">X.X.X.X to<br>X.X.X.X</li>
 					</ul>
 			   </div>
 			  </div>
 			<div class="card bg-light mb-3" style="max-width: 18rem;">
 			  <div class="card-header">Statistics</div>
 			  <div class="card-body scroll">
-				    <ul class="list-group list-group-flush">
+				    <ul class="list-group list-group-flush" id="statistics">
 					  <li class="list-group-item">255 assignable host IPs per subnet</li>
 					  <li class="list-group-item">192930820 total assignable host IPs</li>
 					  <li class="list-group-item">Four /26 subnets</li>
@@ -69,9 +57,9 @@
 		</div>
 		<div class="input-group">
 		  <div class="input-group-prepend">
-		    <span class="input-group-text">Number of Subnets</span>
+		    <span class="input-group-text">Number of Networks</span>
 		  </div>
-		  <input type="text" aria-label="subnets" class="form-control" placeholder="The number of subnets you need. Defaults to 1." id="numSubnets">
+		  <input type="text" aria-label="subnets" class="form-control" placeholder="Optional. The number of networks you want. Defaults to 1 if left blank." id="numSubnets">
 		</div>
 	</div>
 	<div class="calc-button">
