@@ -47,6 +47,7 @@ div.jumbotron.jumbotron-fluid {
 	/* margins to offset the -15px set by bootstrap, otherwise the content will overflow */
 	margin-left: 0px;
 	margin-right: 0px;
+	max-height: 19rem; /* about 300px at default 16px = 1rem */
 }
 
 .author-info {
@@ -72,6 +73,10 @@ ul {
 	list-style-type: none;
 }
 
+#header-message {
+	margin-top: 2rem;
+}
+
 .icon {
 	width: 3rem;
 	height: 3rem;
@@ -86,18 +91,16 @@ ul {
 }
 
 #button-and-headline {
-	white-space: nowrap;
-	width: 100%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
 	padding-bottom: 1rem;
 }
 
 #arrow-box {
-	display: inline-block;
-	white-space: normal;
+	margin-right: 2rem;
 }
 
 .display-4 {
-	display: inline-block;
-	vertical-align: top;
-	width: 50%;
+	
 }
