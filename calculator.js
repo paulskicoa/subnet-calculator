@@ -348,30 +348,52 @@ function decimalToBinary(decimal, bitsRequired) {
 }
 
 function transitionForward() {
-	// hide the fields
+	// hide the input fields
 	var containerTarget = document.getElementsByClassName('container-2');
 	var containerLength = containerTarget.length;
 	for (var i = 0; i < containerLength; i++) {
-		containerTarget[i].style.display = 'none';
+		containerTarget[i].style.cssText = 'display:none;';
 	}
 
-	// remove calculate button
-	document.getElementById('calcButton').style.display = 'none';
+	// hide calculate button
+	document.getElementById('calcButton').style.cssText = 'display:none;';
 
-	// change text in header message
-	document.getElementById('header-message').innerHTML = 'Ezpz. The results are shown below.';
+	// hide header message
+	document.getElementById('header-message').style.cssText = 'display:none;';
 
 	// show the back arrow
-	document.getElementById('back-arrow').removeAttribute('hidden');
+	var arrowBox = document.getElementById('arrow-box');
+	arrowBox.style.cssText = null;
 
 	// show the results
-	var cardsTarget = document.getElementsByClassName('card-deck');
-	var cardsLength = cardsTarget.length;
-	for (var i = 0; i < cardsLength; i++) {
-		cardsTarget[i].removeAttribute('hidden');	
-	}
+	var cardsTarget = document.getElementById('card-deck-id');
+	cardsTarget.style.cssText = null;
 }
 
 function transitionBackward () {
 	clearResults();
+	// remove back arrow
+	var arrowBox = document.getElementById('arrow-box');
+	arrowBox.style.cssText = 'display:none;';
+
+	// hide results cards
+	var containerTarget = document.getElementsByClassName('card-deck');
+	var containerLength = containerTarget.length;
+	for (var i = 0; i < containerLength; i++) {
+		containerTarget[i].style.cssText = 'display:none;';
+	}
+	document.getElementById('card-deck-id').style.cssText = 'display:none;';
+
+	// show calculate button
+	document.getElementById('calcButton').style.cssText = null;
+
+	// show header message
+	document.getElementById('header-message').style.cssText = null;
+
+	// show input fields
+	var containerTarget = document.getElementsByClassName('container-2');
+	var containerLength = containerTarget.length;
+	for (var i = 0; i < containerLength; i++) {
+		containerTarget[i].style.cssText = null;
+	}
 }

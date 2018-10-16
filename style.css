@@ -22,6 +22,7 @@ body {
 .input-group>.input-group-prepend {
     flex: 0 0 20%;
 }
+
 .input-group .input-group-text {
     width: 100%;
 }
@@ -64,13 +65,16 @@ div.jumbotron.jumbotron-fluid {
 	position: relative;
 	top: 10rem;
 }
+
  .card-header {
 	text-align: center;
 }
+
  .card-body {
 	text-align: center;
 	color: black;
 }
+
  .scroll {
 	max-height: 20rem;
     overflow-y: auto;
@@ -79,7 +83,6 @@ div.jumbotron.jumbotron-fluid {
 ul {
 	list-style-type: none;
 }
-
 
 .display-4 {
 	vertical-align: middle;
@@ -93,7 +96,6 @@ ul {
 
 .icon-arrow-circle-left {
 	fill: white;
-	
 }
 
 #arrow-box {
@@ -106,4 +108,3 @@ ul {
 #arrow-box:hover {
 	cursor: pointer;
 }
-

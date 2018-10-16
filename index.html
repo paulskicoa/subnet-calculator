@@ -15,13 +15,13 @@
 	</script>
 	<title>Subnet Calculator (beta)</title>
 </head>
-<body>
+<body id="bootstrap-overrides">
 	<div class="jumbotron jumbotron-fluid">
 	<div class="container">
 			<img src="open-iconic.svg" class="iconic-sprite" style="display:none;" />
-			<div id="arrow-box">
+			<div id="arrow-box" style="display:none;" onclick="transitionBackward();">
 				<svg viewBox="0 0 8 8" class="icon">
-					<use xlink:href="open-iconic.svg#arrow-circle-left" class="icon-arrow-circle-left" id="back-arrow" hidden></use>
+					<use xlink:href="open-iconic.svg#arrow-circle-left" class="icon-arrow-circle-left" id="back-arrow"></use>
 				</svg>
 			</div>
 	    	<h1 class="display-4">Subnetting Made Easy</h1>
@@ -29,7 +29,7 @@
 	    <p class="lead" id="header-message">Tired of doing tedious IP subnetting calculations by hand? (Who isn't?) Just enter the IP, CIDR number, and how many subnets you want, and this tool will do the rest.</p>
   	</div>
 	</div>
-	<div class="card-deck" id="card-deck-id" hidden>
+	<div class="card-deck" id="card-deck-id" style="display:none;">
 		  <div class="card bg-light mb-3" style="max-width: 18rem;">
 			  <div class="card-header">Your Input</div>
 			  <div class="card-body scroll">
@@ -58,7 +58,7 @@
 					</ul>
 			   </div>
 			</div>
-	</div>		
+	</div>	
 	<div class="container-2">
 		<div class="input-group">
 		  <div class="input-group-prepend">
