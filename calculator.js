@@ -358,8 +358,8 @@ function transitionForward() {
 	// hide calculate button
 	document.getElementById('calcButton').style.cssText = 'display:none;';
 
-	// hide header message
-	document.getElementById('header-message').style.cssText = 'display:none;';
+	// change header message
+	document.getElementById('header-message').innerHTML = "Here are the results. Click the back button to edit your input and recalculate.";
 
 	// show the back arrow
 	var arrowBox = document.getElementById('arrow-box');
@@ -387,8 +387,9 @@ function transitionBackward () {
 	// show calculate button
 	document.getElementById('calcButton').style.cssText = null;
 
-	// show header message
-	document.getElementById('header-message').style.cssText = null;
+	// change header message
+	document.getElementById('header-message').innerHTML = "Tired of doing tedious IP subnetting calculations by hand? (Who isn't?)" +
+	" Just enter the IP, CIDR number, and how many subnets you want, and this tool will do the rest.";
 
 	// show input fields
 	var containerTarget = document.getElementsByClassName('container-2');

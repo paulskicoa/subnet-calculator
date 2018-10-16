@@ -1,17 +1,12 @@
 body {
 	font-family: 'K2D', sans-serif;
 	background-color: #2C6BB1;
+	text-align: center;
 }
 
 .jumbotron, .jumbotron-fluid {
 	color: white;
 	background-color: #2C6BB1;
-}
-
-.lead {
-	text-align: center;
-	position: relative;
-	top: 3.5rem;
 }
 
 .input-group {
@@ -27,23 +22,14 @@ body {
     width: 100%;
 }
 
-.container {
-	width: 60%;
-	text-align: center;
-}
-
 .container-2 {
 	margin: 0 auto;
 	width: 60%;
-	position: relative;
-	top: 2rem;
 }
 
 .calc-button {
 	text-align: center;
-	margin: 0px auto;
-	position: relative;
-	top: 6rem;
+	margin: 2.5rem auto;
 }
 
 #calcButton {
@@ -52,18 +38,20 @@ body {
 }
 
 div.jumbotron.jumbotron-fluid {
-	margin-bottom: 0px;
+	padding-top: 5rem;
+	margin-bottom: 0;
 }
 
 .card-deck {
 	justify-content: center;
+	/* margins to offset the -15px set by bootstrap, otherwise the content will overflow */
+	margin-left: 0px;
+	margin-right: 0px;
 }
 
 .author-info {
 	color: white;
 	text-align: center;
-	position: relative;
-	top: 10rem;
 }
 
  .card-header {
@@ -84,11 +72,6 @@ ul {
 	list-style-type: none;
 }
 
-.display-4 {
-	vertical-align: middle;
-	display: inline;
-}
-
 .icon {
 	width: 3rem;
 	height: 3rem;
@@ -98,13 +81,23 @@ ul {
 	fill: white;
 }
 
-#arrow-box {
-	display: inline-block;
-	position: relative;
-	right: 3rem;
-	top: 0.2rem;
-}
-
 #arrow-box:hover {
 	cursor: pointer;
+}
+
+#button-and-headline {
+	white-space: nowrap;
+	width: 100%;
+	padding-bottom: 1rem;
+}
+
+#arrow-box {
+	display: inline-block;
+	white-space: normal;
+}
+
+.display-4 {
+	display: inline-block;
+	vertical-align: top;
+	width: 50%;
 }
