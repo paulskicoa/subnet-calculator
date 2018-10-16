@@ -358,7 +358,11 @@ function transitionForward() {
 	// remove calculate button
 	document.getElementById('calcButton').style.display = 'none';
 
-	// show back button
+	// change text in header message
+	document.getElementById('header-message').innerHTML = 'Ezpz. The results are shown below.';
+
+	// show the back arrow
+	document.getElementById('back-arrow').removeAttribute('hidden');
 
 	// show the results
 	var cardsTarget = document.getElementsByClassName('card-deck');
@@ -369,5 +373,5 @@ function transitionForward() {
 }
 
 function transitionBackward () {
-
+	clearResults();
 }
