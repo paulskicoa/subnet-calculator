@@ -22,6 +22,10 @@ body {
     width: 100%;
 }
 
+.input-group-text {
+	border: 0;
+}
+
 .container-2 {
 	margin: 0 auto;
 	width: 60%;
@@ -131,3 +135,20 @@ ul {
 .display-4 {
 	
 }
+
+input[type="text"], textarea {
+	outline: none;
+	box-shadow: none !important;
+	border: 1px solid #ccc !important;
+}
+
+.focused {
+	color: black;
+	background-color: #FFAD2F;
+}
+
+.focused-border {
+	border: 3px solid #FFAD2F !important;
+	border-radius: 0.6rem;
+}
+

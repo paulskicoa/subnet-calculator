@@ -62,15 +62,15 @@
 			</div>
 	</div>	
 	<div class="container-2">
-		<div class="input-group">
+		<div class="input-group" id="input-group-1">
 		  <div class="input-group-prepend">
-		    <span class="input-group-text">IP Address and CIDR</span>
+		    <span class="input-group-text" id="ip-and-cidr-group">IP Address and CIDR</span>
 		  </div>
 		  <input type="text" aria-label="ipAddress" class="form-control" placeholder="For example, 192.42.53.12/24" id="ipAndCidr" required>
 		</div>
-		<div class="input-group">
+		<div class="input-group" id="input-group-2">
 		  <div class="input-group-prepend">
-		    <span class="input-group-text">Number of Networks</span>
+		    <span class="input-group-text" id="num-networks-group">Number of Networks</span>
 		  </div>
 		  <input type="text" aria-label="subnets" class="form-control" placeholder="Optional. The number of networks you want. Defaults to 1 if left blank." id="numSubnets" min="1">
 		</div>
@@ -104,5 +104,30 @@
 	<script type="text/javascript" src="calculator.js"></script>
 	<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
 	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+	<!-- this jQuery is used to change css styling of one div (not parent or sibling, which can be done with css) when selecting another div -->
+	<script type="text/javascript">
+		$('#ipAndCidr').on({
+			focus: function() {
+				$('#ip-and-cidr-group').addClass('focused');
+				$('#input-group-1').addClass('focused-border');
+			},
+
+			blur: function() {
+				$('#ip-and-cidr-group').removeClass('focused');
+				$('#input-group-1').removeClass('focused-border');
+			}
+		})
+		$('#numSubnets').on({
+			focus: function() {
+				$('#num-networks-group').addClass('focused');
+				$('#input-group-2').addClass('focused-border');
+			},
+
+			blur: function() {
+				$('#num-networks-group').removeClass('focused');
+				$('#input-group-2').removeClass('focused-border');
+			}
+		})
+	</script>
 </body>
 </html>
