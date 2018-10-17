@@ -1,13 +1,41 @@
 const powersOfTwo = [128, 64, 32, 16, 8, 4, 2, 1];
 const ipOnlyRegex = /^(\d\d?\d?)\.(\d\d?\d?)\.(\d\d?\d?)\.(\d\d?\d?)$/;
-const ipWithCidrRegex = /^(\d\d?\d?)\.(\d\d?\d?)\.(\d\d?\d?)\.(\d\d?\d?)\s*\/\d{1,2}$/
+const ipWithCidrRegex = /^(\d\d?\d?)\.(\d\d?\d?)\.(\d\d?\d?)\.(\d\d?\d?)\s*\/\d{1,2}$/;
 const cidrRegex = /.*\/\d{1,2}$/;
+
+// yes, yes, I know. all global functions. I'll refactor it soon.
+
+// used to determine which error a user made when giving an input 
+function getReturnCode(ipWithCIDR, numberOfSubnets) {
+
+	if(numberOfSubnets === '') { // user left it blank, defaults to 1
+		numberOfSubnets = '1';
+	}
+	var returnCode = validateInput(ipWithCIDR, numberOfSubnets);
+
+	// for now, just check if a non-zero (i.e. error code) was returned, and if so, display the invalid input modal to the user
+	if(returnCode < 0) {
+		// code to display modal
+		$('#invalidInputModal').modal('show');
+	}
+}
+
+function validateSubnets(numberOfSubnets) {
+		numberOfSubnets = parseInt(numberOfSubnets);
+		if(numberOfSubnets >= 1 && numberOfSubnets <= Number.MAX_SAFE_INTEGER) {return 0;} // not a realistic upper bound, but will do for now
+		// num subnets out of bounds
+		return -5;
+}
 
 function validateInput(ipWithCIDR, numberOfSubnets) {
 	clearResults();
 	var ip; // e.g. '192.168.1.1'
 	var cidr; // e.g. '24'
 	var cidrInferred = false; // boolean
+
+	// check if number of subnets is valid
+	var subnetsResultCode = validateSubnets(numberOfSubnets);
+	if(numberOfSubnets === -5) {return -5};
 
 	// attempt to infer the CIDR value from classful addressing if it was omitted
 	
@@ -29,7 +57,7 @@ function validateInput(ipWithCIDR, numberOfSubnets) {
 			return -2;
 		}
 
-		// IP and CIDR have right format, but possibly not numerically valid. split into IP and CIDR parts and validate both
+		// IP and CIDR have right format, but possibly not the valid numerical range. split into IP and CIDR parts and validate both
 		var octetArrayBinary = [];
 		var ipWithCIDRArray = ipWithCIDR.split('/'); // e.g. '192.168.1.0/24' becomes [192.168.1.0, 24]
 		// strip any whitespace from the end of the IP
@@ -127,9 +155,6 @@ function attemptCidrInference(ip) {
 }
 
 function processSubnets(selectedValue, CIDR, startingNetworkId) {
-	if (selectedValue === '') { // user left it blank, defaults to 1
-		selectedValue = '1';
-	}
 	// holds the network ids for all subnets (in decimal)
 	var networkIds = [];
 	var networkIdsBinary = []; // for use with the getUsableAddressRanges() function

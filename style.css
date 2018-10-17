@@ -24,6 +24,7 @@ body {
 
 .input-group-text {
 	border: 0;
+	border-radius: 0.4rem;
 }
 
 .container-2 {
@@ -149,6 +150,10 @@ input[type="text"], textarea {
 
 .focused-border {
 	border: 3px solid #FFAD2F !important;
-	border-radius: 0.6rem;
+	border-radius: 0.7rem;
+}
+
+.form-control {
+	border-radius: 0.4rem;
 }
 

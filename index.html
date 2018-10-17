@@ -76,7 +76,7 @@
 		</div>
 	</div>
 	<div class="calc-button">
-		<button type="button" class="btn btn-secondary" id="calcButton" onclick="validateInput(ipAndCidr.value, numSubnets.value);">Calculate</button>
+		<button type="button" class="btn btn-secondary" id="calcButton" onclick="getReturnCode(ipAndCidr.value, numSubnets.value);">Calculate</button>
 	</div>
 	<div class="author-info">
 		<p>A webapp by Paul Skittlethorp</p>
@@ -92,7 +92,7 @@
 	        </button>
 	      </div>
 	      <div class="modal-body">
-	        One or more values you entered are invalid. The IP and CIDR should look like X.X.X.X/Y, where X is a whole number between 0 and 255 and Y is a whole number between 0 and 32. The number of subnets must be a whole number greater than or equal to 1.
+	        One or more values you entered are invalid. The IP and CIDR should look like X.X.X.X(/Y), where X is a whole number between 0 and 255 and Y (optional) is a whole number between 0 and 32. The number of subnets must be a whole number greater than or equal to 1.
 	      </div>
 	      <div class="modal-footer">
 	        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
