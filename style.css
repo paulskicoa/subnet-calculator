@@ -157,3 +157,16 @@ input[type="text"], textarea {
 	border-radius: 0.4rem;
 }
 
+a {
+	cursor: pointer;
+	color: white;
+	transition: all 0.5s;
+	text-decoration: none;
+}
+
+a:hover {
+	color: #FFAD2F;
+	transform: scale(1.1);
+	text-decoration: none;
+}
+

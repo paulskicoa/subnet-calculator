@@ -466,6 +466,9 @@ function transitionForward() {
 	// hide calculate button
 	document.getElementById('calcButton').style.cssText = 'display:none;';
 
+	// hide author info
+	document.getElementById('authorInfo').style.cssText = 'display:none;';
+
 	// change header message
 	document.getElementById('header-message').innerHTML = "Here are the results. Click the back button to edit your input and recalculate.";
 
@@ -494,6 +497,9 @@ function transitionBackward () {
 
 	// show calculate button
 	document.getElementById('calcButton').style.cssText = null;
+
+	// show author info
+	document.getElementById('authorInfo').style.cssText = null;
 
 	// change header message
 	document.getElementById('header-message').innerHTML = "Tired of doing tedious IP subnetting calculations by hand? (Who isn't?) " +
