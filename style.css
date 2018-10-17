@@ -35,6 +35,12 @@ body {
 #calcButton {
 	background-color: white;
 	color: black;
+	transition: all 0.5s;
+}
+
+#calcButton:hover {
+	transform: scale(1.1);
+	background-color: #FFAD2F;
 }
 
 div.jumbotron.jumbotron-fluid {
@@ -48,6 +54,19 @@ div.jumbotron.jumbotron-fluid {
 	margin-left: 0px;
 	margin-right: 0px;
 	max-height: 19rem; /* about 300px at default 16px = 1rem */
+	
+}
+
+.card {
+	transition: all 0.5s;
+}
+
+.card:hover {
+	transform: scale(1.1);
+}
+
+.card:hover .card-header {
+	background-color: #FFAD2F;
 }
 
 .author-info {
@@ -57,6 +76,7 @@ div.jumbotron.jumbotron-fluid {
 
  .card-header {
 	text-align: center;
+	transition: background-color 0.5s;
 }
 
  .card-body {
@@ -84,9 +104,15 @@ ul {
 
 .icon-arrow-circle-left {
 	fill: white;
+	transition: fill 0.5s;
+}
+
+#arrow-box:hover .icon-arrow-circle-left {
+	fill: #FFAD2F;
 }
 
 #arrow-box:hover {
+	transform: scale(1.1);
 	cursor: pointer;
 }
 
@@ -99,6 +125,7 @@ ul {
 
 #arrow-box {
 	margin-right: 2rem;
+	transition: all 0.5s;
 }
 
 .display-4 {
