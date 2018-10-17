@@ -28,7 +28,7 @@
 	    	<h1 class="display-4">Subnetting Made Easy</h1>
 	    	</div>
 		
-	    <p class="lead" id="header-message">Tired of doing tedious IP subnetting calculations by hand? (Who isn't?) Just enter the IP, CIDR number, and how many subnets you want, and this tool will do the rest.</p>
+	    <p class="lead" id="header-message">Tired of doing tedious IP subnetting calculations by hand? (Who isn't?) Just enter the IP, and optionally, the CIDR number and how many subnets you want, and this tool will do the rest. If you don't enter a CIDR value, this tool can infer it from the first octet, as long as it would fit into Class A, B, or C. Neat!</p>
   	</div>
 	</div>
 	<div class="card-deck" id="card-deck-id" style="display:none;">
@@ -64,7 +64,7 @@
 	<div class="container-2">
 		<div class="input-group" id="input-group-1">
 		  <div class="input-group-prepend">
-		    <span class="input-group-text" id="ip-and-cidr-group">IP Address and CIDR</span>
+		    <span class="input-group-text" id="ip-and-cidr-group">IP and (Optional) CIDR</span>
 		  </div>
 		  <input type="text" aria-label="ipAddress" class="form-control" placeholder="For example, 192.42.53.12/24" id="ipAndCidr" required>
 		</div>

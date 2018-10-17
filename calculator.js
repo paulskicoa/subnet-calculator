@@ -1,13 +1,51 @@
 const powersOfTwo = [128, 64, 32, 16, 8, 4, 2, 1];
+const ipOnlyRegex = /^(\d\d?\d?)\.(\d\d?\d?)\.(\d\d?\d?)\.(\d\d?\d?)$/;
+const ipWithCidrRegex = /^(\d\d?\d?)\.(\d\d?\d?)\.(\d\d?\d?)\.(\d\d?\d?)\s*\/\d{1,2}$/
+const cidrRegex = /.*\/\d{1,2}$/;
 
 function validateInput(ipWithCIDR, numberOfSubnets) {
 	clearResults();
-	// ensure the Ip and CIDR are of the form 'X.X.X.X/Y' with X between 0 and 255, Y between 0 and 32. there may be spaces between *.X and /Y also.
-	var octetArrayBinary = [];
-	var ipWithCIDRArray = ipWithCIDR.split('/'); // e.g. '192.168.1.0/24' becomes [192.168.1.0, 24]
-	var octetArrayDecimal = ipWithCIDRArray[0].split('.'); // get just the IP portion from the array and split it into octets
-	var CIDR = parseInt(ipWithCIDRArray[1], 10); //get just the CIDR portion from the array, convert to int with base 10 (decimal)
+	var ip; // e.g. '192.168.1.1'
+	var cidr; // e.g. '24'
+	var cidrInferred = false; // boolean
 
+	// attempt to infer the CIDR value from classful addressing if it was omitted
+	
+	if(ipWithCIDR.match(ipOnlyRegex) !== null) { // only IP was given
+		// ensure the IP is valid
+		if(!isValidIP(ipWithCIDR)) {return -1;} // invalid IP given. alert the user
+		ip = ipWithCIDR;
+		// the IP is valid, but no CIDR was given. attempt to infer its value from first octet number
+		var result = attemptCidrInference(ipWithCIDR);
+		if(result === -3) {return -3} // couldn't infer CIDR from IP
+		// we have valid IP and CIDR. proceed
+		cidr = result;
+		cidrInferred = true;
+	}
+
+	else {
+		// check for a valid IP and CIDR combo
+		if(ipWithCIDR.match(ipWithCidrRegex) === null) { // invalid input
+			return -2;
+		}
+
+		// IP and CIDR have right format, but possibly not numerically valid. split into IP and CIDR parts and validate both
+		var octetArrayBinary = [];
+		var ipWithCIDRArray = ipWithCIDR.split('/'); // e.g. '192.168.1.0/24' becomes [192.168.1.0, 24]
+		// strip any whitespace from the end of the IP
+		var ipCandidate = ipWithCIDRArray[0].trim();
+		if(!isValidIP(ipCandidate)) {return -1;} // invalid IP given
+		ip = ipCandidate;
+		// IP is valid, now check CIDR
+		var cidrCandidate = ipWithCIDRArray[1].trim();
+		if(!isValidCidr(cidrCandidate)) {return -4};
+		// we have valid IP and CIDR. proceed
+		cidr = cidrCandidate;
+	}
+
+	var octetArrayBinary = [];
+	var octetArrayDecimal = ip.split('.'); // split IP into octets
+	var CIDR = parseInt(cidr);
 	octetArrayDecimal.forEach(function(octetDecimal) {
 		var octetBinary = getBinaryStringForIP(octetDecimal);
 		octetArrayBinary.push(octetBinary);
@@ -22,7 +60,7 @@ function validateInput(ipWithCIDR, numberOfSubnets) {
 	displayInputSummary('IP: ' + decimalIpString);
 	console.log('IP address given: ', decimalIpString);
 
-	displayInputSummary('CIDR: /' + CIDR);
+	displayInputSummary('CIDR: /' + CIDR + (cidrInferred? ' (inferred)':''));
 	console.log('CIDR value given: /', CIDR);
 
 	// print the subnet mask in binary
@@ -40,7 +78,52 @@ function validateInput(ipWithCIDR, numberOfSubnets) {
 	var startingNetworkId = networkIdBinary;
 
 	processSubnets(numberOfSubnets, CIDR, startingNetworkId);
-	transitionForward();	
+	transitionForward();
+	return 0; // ran successfully
+}
+
+function isValidIP(ip) {
+	if(ip.match(ipOnlyRegex) === null) {return false;}
+	var matches = ipOnlyRegex.exec(ip); // put the capture groups into an array. the octets will start at matches[1]
+	// each should be a number between 0 and 255
+	var octet;
+	for (var i = 1; i < matches.length; i++) {
+		octet = customParseInt(matches[i]);
+		if(octet < 0 || octet > 255) {
+			return false;
+		}
+	}
+	return true;
+}
+
+function isValidCidr(str) {
+	var cidrCandidate = customParseInt(str);
+	if(cidrCandidate === -1) {return false;}
+	if(cidrCandidate < 0 || cidrCandidate > 32) {return false;}
+	return true;
+}
+
+function customParseInt(str) { // used to validate IP or CIDR
+	// any string that has a zero as first char followed by any non-zero chars should be rejected
+	var badInputRegex = /^0\d\d?$/;
+	if(str.match(badInputRegex) == null) {
+		// input is good
+		return parseInt(str);
+	}
+	else {
+		return -1; // input was bad
+	}
+}
+
+function attemptCidrInference(ip) {
+	var octetArrayDecimal = ip.split('.');
+	var firstOctet = parseInt(octetArrayDecimal[0]);
+	if(firstOctet >= 0 && firstOctet <= 127) {return 8;} // Class A
+	if(firstOctet >= 128 && firstOctet <= 191) {return 16;} // Class B
+	if(firstOctet >= 192 && firstOctet <= 223) {return 24;} // Class C
+
+	// user hasn't entered enough info. subnet mask/CIDR can't be determined, and there's no way to proceed
+	return -3;
 }
 
 function processSubnets(selectedValue, CIDR, startingNetworkId) {
@@ -388,8 +471,9 @@ function transitionBackward () {
 	document.getElementById('calcButton').style.cssText = null;
 
 	// change header message
-	document.getElementById('header-message').innerHTML = "Tired of doing tedious IP subnetting calculations by hand? (Who isn't?)" +
-	" Just enter the IP, CIDR number, and how many subnets you want, and this tool will do the rest.";
+	document.getElementById('header-message').innerHTML = "Tired of doing tedious IP subnetting calculations by hand? (Who isn't?) " +
+	"Just enter the IP, and optionally, the CIDR number and how many subnets you want, and this tool will do the rest. " +
+	"If you don't enter a CIDR value, this tool can infer it from the first octet, as long as it would fit into Class A, B, or C. Neat!";
 
 	// show input fields
 	var containerTarget = document.getElementsByClassName('container-2');
