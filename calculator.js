@@ -8,9 +8,11 @@ const cidrRegex = /.*\/\d{1,2}$/;
 // used to determine which error a user made when giving an input 
 function getReturnCode(ipWithCIDR, numberOfSubnets) {
 
-	if(numberOfSubnets === '') { // user left it blank, defaults to 1
+	if(numberOfSubnets === '' || numberOfSubnets === '0') { // both inputs mean all IPs should be associated with one network ID
+		// but for calculation purposes, 0 will be adjusted to 1
 		numberOfSubnets = '1';
 	}
+
 	var returnCode = validateInput(ipWithCIDR, numberOfSubnets);
 
 	// for now, just check if a non-zero (i.e. error code) was returned, and if so, display the invalid input modal to the user
@@ -22,7 +24,7 @@ function getReturnCode(ipWithCIDR, numberOfSubnets) {
 
 function validateSubnets(numberOfSubnets) {
 		numberOfSubnets = parseInt(numberOfSubnets);
-		if(numberOfSubnets >= 1 && numberOfSubnets <= Number.MAX_SAFE_INTEGER) {return 0;} // not a realistic upper bound, but will do for now
+		if(numberOfSubnets >= 0 && numberOfSubnets <= Number.MAX_SAFE_INTEGER) {return 0;} // not a realistic upper bound, but will do for now
 		// num subnets out of bounds
 		return -5;
 }
@@ -97,7 +99,7 @@ function validateInput(ipWithCIDR, numberOfSubnets) {
 
 	// print the subnet mask in decimal
 	var netmaskDecimal = getIpAsString(getDecimalFromBinaryIP(netmask));
-	// displayInputSummary('Subnet Mask: ' + netmaskDecimal);
+	displayStatistics('Subnet Mask: ' + netmaskDecimal);
 	console.log('Netmask given: ', netmaskDecimal);
 
 	// get the network ID as a binary string

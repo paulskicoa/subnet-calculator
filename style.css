@@ -30,6 +30,7 @@ body {
 .container-2 {
 	margin: 0 auto;
 	width: 60%;
+	padding-bottom: 2rem;
 }
 
 .calc-button {
@@ -44,7 +45,6 @@ body {
 }
 
 #calcButton:hover {
-	transform: scale(1.1);
 	background-color: #FFAD2F;
 }
 
@@ -166,7 +166,13 @@ a {
 
 a:hover {
 	color: #FFAD2F;
-	transform: scale(1.1);
 	text-decoration: none;
 }
 
+/*.list-group-item {
+	height: 100%;
+}
+
+.list-group {
+	height: 100%;
+}*/

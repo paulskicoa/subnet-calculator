@@ -28,7 +28,7 @@
 	    	<h1 class="display-4">Subnetting Made Easy</h1>
 	    	</div>
 		
-	    <p class="lead" id="header-message">Tired of doing tedious IP subnetting calculations by hand? (Who isn't?) Just enter the IP, and optionally, the CIDR number and how many subnets you want, and this tool will do the rest. If you don't enter a CIDR value, this tool can infer it from the first octet, as long as it would fit into Class A, B, or C. Neat!</p>
+	    <p class="lead" id="header-message">Tired of doing tedious networking calculations by hand? Want to know the Network IDs and usable host addresses for a range of subnets? Then this tool is for you! Enter an IP with a CIDR value for classless addressing, or for a Class A, B, or C network, enter just the IP, and the CIDR will be calculated for you. Say how many subnets you want from a network, and this tool will divide your address space evenly to accomodate that. Easy!</p>
   	</div>
 	</div>
 	<div class="card-deck" id="card-deck-id" style="display:none;">
@@ -47,7 +47,7 @@
 			   </div>
 			  </div>
 			<div class="card bg-light mb-3" style="max-width: 18rem;">
-			  <div class="card-header">Assignable Address Ranges</div>
+			  <div class="card-header">Address Ranges</div>
 			  <div class="card-body scroll">
 				    <ul class="list-group list-group-flush" id="address-range-list">
 					</ul>
@@ -64,22 +64,22 @@
 	<div class="container-2">
 		<div class="input-group" id="input-group-1">
 		  <div class="input-group-prepend">
-		    <span class="input-group-text" id="ip-and-cidr-group">IP and (Optional) CIDR</span>
+		    <span class="input-group-text" id="ip-and-cidr-group">IP/CIDR</span>
 		  </div>
-		  <input type="text" aria-label="ipAddress" class="form-control" placeholder="For example, 192.42.53.12/24" id="ipAndCidr" required>
+		  <input type="text" aria-label="ipAddress" class="form-control" placeholder="e.g. 192.168.1.5/24 or 192.42.53.12" id="ipAndCidr">
 		</div>
 		<div class="input-group" id="input-group-2">
 		  <div class="input-group-prepend">
-		    <span class="input-group-text" id="num-networks-group">Number of Networks</span>
+		    <span class="input-group-text" id="num-networks-group">Subnets</span>
 		  </div>
-		  <input type="text" aria-label="subnets" class="form-control" placeholder="Optional. The number of networks you want. Defaults to 1 if left blank." id="numSubnets" min="1">
+		  <input type="text" aria-label="subnets" class="form-control" placeholder="Optional. The number of subnets to create. Defaults to 0." id="numSubnets">
 		</div>
 	</div>
 	<div class="calc-button">
 		<button type="button" class="btn btn-secondary" id="calcButton" onclick="getReturnCode(ipAndCidr.value, numSubnets.value);">Calculate</button>
 	</div>
 	<div class="author-info" id="authorInfo">
-		<p>An open-source webapp by Paul Skittlethorp.<a href="https://github.com/paulskicoa/subnet-calculator" target="_blank"> View the source here on my Github.</a></p>
+		<p>An open-source webapp by Paul Skittlethorp.<a href="https://github.com/paulskicoa/subnet-calculator" target="_blank"> See this project on Github.</a></p>
 	</div>
 	<!-- Modal -->
 	<div class="modal fade" id="invalidInputModal" tabindex="-1" role="dialog" aria-labelledby="invalidInputModalTitle" aria-hidden="true">
