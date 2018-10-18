@@ -9,28 +9,30 @@ body {
 	background-color: #2C6BB1;
 }
 
-.input-group {
-	margin-top: 10px;
-	margin-bottom: 10px;
+.container-2 {
+	display: flex;
+	width: 80%;
+	margin: 0 auto;
+	padding-bottom: 2rem;
 }
 
-.input-group>.input-group-prepend {
+.input-group {
+	margin: 0.5rem;
+}
+
+/*.input-group>.input-group-prepend {
     flex: 0 0 20%;
 }
 
 .input-group .input-group-text {
     width: 100%;
-}
+}*/
 
 .input-group-text {
 	border: 0;
-	border-radius: 0.4rem;
-}
-
-.container-2 {
-	margin: 0 auto;
-	width: 60%;
-	padding-bottom: 2rem;
+	color: white;
+	background-color: #73A1D4;
+	/*border-radius: 0.4rem;*/
 }
 
 div.jumbotron.jumbotron-fluid {
@@ -60,6 +62,7 @@ div.jumbotron.jumbotron-fluid {
 }
 
 .author-info {
+	padding-top: 2rem;
 	color: white;
 	text-align: center;
 }
@@ -134,26 +137,53 @@ ul {
 
 #arrow-box-forward {
 	transition: all 0.5s;
+	margin-left: 2rem;
 }
 
+#forward-arrow {
+	position: relative;
+	top: 0.25rem;
+}
+
+/* this block gets rid of bootstrap blue highlight on form field focus */
 input[type="text"], textarea {
 	outline: none;
 	box-shadow: none !important;
 	border: 1px solid #ccc !important;
 }
 
-.focused {
-	color: black;
-	background-color: #FFAD2F;
+#ip-and-cidr-group {
+	border-top-left-radius: 0.4rem;
+	border-bottom-left-radius: 0.4rem;
 }
 
-.focused-border {
-	border: 3px solid #FFAD2F !important;
-	border-radius: 0.7rem;
+#num-networks-group {
+	border-top-left-radius: 0.4rem;
+	border-bottom-left-radius: 0.4rem;
 }
 
-.form-control {
-	border-radius: 0.4rem;
+#ipAndCidr {
+	border-top-right-radius: 0.4rem;
+	border-bottom-right-radius: 0.4rem;
+	transition: all 0.1s;
+}
+
+#ipAndCidr:focus {
+	border-width: 3px !important;
+	border-style: solid !important; 
+	border-color: #FFAD2F !important;
+}
+
+#numSubnets {
+	border-top-right-radius: 0.4rem;
+	border-bottom-right-radius: 0.4rem;
+	transition: all 0.1s;
+}
+
+#numSubnets:focus {
+	border-width: 3px !important;
+	border-style: solid !important;
+	border-color: #FFAD2F !important;
 }
 
 a {

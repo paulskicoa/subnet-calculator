@@ -55,8 +55,8 @@
 			<div class="card bg-light mb-3" style="max-width: 18rem;">
 			  <div class="card-header">Statistics</div>
 			  <div class="card-body scroll">
-				    <ul class="list-group list-group-flush" id="statistics">
-					</ul>
+			     <ul class="list-group list-group-flush" id="statistics">
+				 </ul>
 			   </div>
 			</div>
 	</div>	
@@ -73,11 +73,11 @@
 		  </div>
 		  <input type="text" aria-label="subnets" class="form-control" placeholder="Optional. The number of subnets to create. Defaults to 0." id="numSubnets">
 		</div>
-	</div>
-	<div class="arrow-box" id="arrow-box-forward" onclick="getReturnCode(ipAndCidr.value, numSubnets.value);">
+		<div class="arrow-box" id="arrow-box-forward" onclick="getReturnCode(ipAndCidr.value, numSubnets.value);">
 		<svg viewBox="0 0 8 8" class="icon">
 			<use xlink:href="open-iconic.svg#arrow-circle-right" class="icon-arrow-circle-right" id="forward-arrow"></use>
 		</svg>
+	</div>
 	</div>
 	<div class="author-info" id="authorInfo">
 		<p>An open-source webapp by Paul Skittlethorp.<a href="https://github.com/paulskicoa/subnet-calculator" target="_blank"> See this project on Github.</a></p>
@@ -106,29 +106,33 @@
 	<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
 	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
 	<!-- this jQuery is used to change css styling of one div (not parent or sibling, which can be done with css) when selecting another div -->
-	<script type="text/javascript">
+	<!-- <script type="text/javascript">
 		$('#ipAndCidr').on({
 			focus: function() {
 				$('#ip-and-cidr-group').addClass('focused');
-				$('#input-group-1').addClass('focused-border');
+				// $('#ipAndCidr').addClass('focused-border');
 			},
 
 			blur: function() {
 				$('#ip-and-cidr-group').removeClass('focused');
-				$('#input-group-1').removeClass('focused-border');
+				// $('#ipAndCidr').removeClass('focused-border');
 			}
 		})
 		$('#numSubnets').on({
 			focus: function() {
 				$('#num-networks-group').addClass('focused');
-				$('#input-group-2').addClass('focused-border');
+				// $('#numSubnets').addClass('focused-border');
 			},
 
 			blur: function() {
 				$('#num-networks-group').removeClass('focused');
-				$('#input-group-2').removeClass('focused-border');
+				// $('#numSubnets').removeClass('focused-border');
 			}
 		})
-	</script>
+
+		/*$("input[placeholder]").each(function () {
+        $(this).attr('size', $(this).attr('placeholder').length);
+    		});*/
+	</script> -->
 </body>
 </html>
