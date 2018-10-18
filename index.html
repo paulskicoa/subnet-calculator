@@ -21,17 +21,22 @@
 	<div class="jumbotron jumbotron-fluid">
 	<div class="container">
 		<div id="button-and-headline">
-		<div class="arrow-box" id="arrow-box-back" style="display:none;" onclick="transitionBackward();">
+		<div class="arrow-box" id="arrow-box-back" style="display:none;">
 			<svg viewBox="0 0 8 8" class="icon">
 				<use xlink:href="open-iconic.svg#arrow-circle-left" class="icon-arrow-circle-left" id="back-arrow"></use>
 			</svg>
 		</div>
     	<h1 class="display-4">Subnetting Made Easy</h1>
     	</div>
-	    <p class="lead" id="header-message">Tired of doing tedious networking calculations by hand? Want to know the Network IDs and IP addresses for a range of subnets? Then this tool is for you! Enter an IP with a CIDR value for classless addressing, or for a Class A, B, or C network, enter just the IP, and the CIDR will be automatically calculated. Say how many subnets you want from a network, and this tool will divide your address space evenly, so you'll have at least that many subnets. Easy!</p>
+	    <div id="header-message-intro">
+	    	<p class="lead">Tired of doing tedious networking calculations by hand? Want to know the Network IDs and IP addresses for a range of subnets? Then this tool is for you! Enter an IP with a CIDR value for classless addressing, or for a Class A, B, or C network, enter just the IP, and the CIDR will be automatically calculated. Say how many subnets you want from a network, and this tool will divide your address space evenly, so you'll have at least that many subnets. Easy!</p>
+	    </div>
+	    <div id="header-message-results" style="display: none;">
+	    	<p class="lead">Here are the results. Click the back button to edit your input and recalculate.</p>
+	    </div>
   	</div>
 	</div>
-	<div class="card-deck" id="card-deck-id">
+	<div class="card-deck" id="card-deck-id" style="display: none;">
 		  <div class="card bg-light mb-3" style="max-width: 18rem;">
 			  <div class="card-header">Your Input</div>
 			  <div class="card-body scroll">
@@ -74,7 +79,7 @@
 		  </div>
 		  <input type="text" aria-label="subnets" class="form-control" placeholder="Optional. The number of subnets to create. Defaults to 0." id="numSubnets">
 		</div>
-		<div class="arrow-box" id="arrow-box-forward" onclick="getReturnCode(ipAndCidr.value, numSubnets.value);">
+		<div class="arrow-box" id="arrow-box-forward">
 		<svg viewBox="0 0 8 8" class="icon">
 			<use xlink:href="open-iconic.svg#arrow-circle-right" class="icon-arrow-circle-right" id="forward-arrow"></use>
 		</svg>
@@ -127,14 +132,22 @@
 	</script>
 	<script type="text/javascript">
 		$( document ).ready(function() {
-			$('#card-deck-id').hide();
 			$('#arrow-box-forward').click(function() {
-				$('#container-2-id').fadeOut(300);
-				$('#arrow-box-forward').fadeOut(300);
-				$('#authorInfo').fadeOut(300);
-				document.getElementById('header-message').innerHTML = "Here are the results. Click the back button to edit your input and recalculate.";
-	    		$('#card-deck-id').delay(400).fadeIn(300);
-	    		$('#arrow-box-back').delay(400).fadeIn(300);
+				var code = getReturnCode(ipAndCidr.value, numSubnets.value);
+				// for now, just check if a non-zero (i.e. error code) was returned, and if so, display the invalid input modal to the user
+				if(code < 0) {
+					$('#invalidInputModal').modal('show');
+				}
+
+				else {
+					$('#container-2-id').fadeOut(300);
+					$('#arrow-box-forward').fadeOut(300);
+					$('#authorInfo').fadeOut(300);
+					$('#header-message-intro').fadeOut(300);
+	    			$('#header-message-results').delay(400).fadeIn(300);
+	    			$('#card-deck-id').delay(400).fadeIn(300);
+	    			$('#arrow-box-back').delay(400).fadeIn(300);
+				}			
 			});
 
 			$('#arrow-box-back').click(function() {
@@ -144,7 +157,9 @@
 	    		$('#arrow-box-back').fadeOut(300);
 	    		$('#arrow-box-forward').delay(400).fadeIn(300);
 	    		$('#authorInfo').delay(400).fadeIn(300);
-	    		document.getElementById('header-message').innerHTML = "Tired of doing tedious networking calculations by hand? Want to know the Network IDs and IP addresses for a range of subnets? Then this tool is for you! Enter an IP with a CIDR value for classless addressing, or for a Class A, B, or C network, enter just the IP, and the CIDR will be automatically calculated. Say how many subnets you want from a network, and this tool will divide your address space evenly, so you'll have at least that many subnets. Easy!";
+	    		$('#header-message-results').fadeOut(300);
+	    		$('#header-message-intro').delay(400).fadeIn(300);
+
 			});
     	});
 	</script>

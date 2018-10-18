@@ -14,12 +14,7 @@ function getReturnCode(ipWithCIDR, numberOfSubnets) {
 	}
 
 	var returnCode = validateInput(ipWithCIDR, numberOfSubnets);
-
-	// for now, just check if a non-zero (i.e. error code) was returned, and if so, display the invalid input modal to the user
-	if(returnCode < 0) {
-		// code to display modal
-		$('#invalidInputModal').modal('show');
-	}
+	return returnCode;
 }
 
 function validateSubnets(numberOfSubnets) {
@@ -108,7 +103,6 @@ function validateInput(ipWithCIDR, numberOfSubnets) {
 	var startingNetworkId = networkIdBinary;
 
 	processSubnets(numberOfSubnets, CIDR, startingNetworkId);
-	transitionForward();
 	return 0; // ran successfully
 }
 
@@ -455,58 +449,4 @@ function decimalToBinary(decimal, bitsRequired) {
 	binaryString = binaryString.substring(binaryString.length - bitsRequired);
 	return binaryString;
 
-}
-
-function transitionForward() {
-	/* // hide the input fields
-	var containerTarget = document.getElementsByClassName('container-2');
-	var containerLength = containerTarget.length;
-	for (var i = 0; i < containerLength; i++) {
-		containerTarget[i].style.cssText = 'display:none;';
-	}
-
-	// hide forward arrow (calculate button)
-	document.getElementById('arrow-box-forward').style.cssText = 'display:none;';
-
-	// hide author info
-	document.getElementById('authorInfo').style.cssText = 'display:none;';
-
-	// change header message
-	document.getElementById('header-message').innerHTML = "Here are the results. Click the back button to edit your input and recalculate.";
-
-	// show the back arrow
-	document.getElementById('arrow-box-back').style.cssText = null;
-
-	// show the results
-	/*document.getElementById('card-deck-id').style.cssText = null;*/
-}
-
-function transitionBackward () {
-	/*clearResults();
-	// remove back arrow
-	document.getElementById('arrow-box-back').style.cssText = 'display:none;';
-
-	// hide results cards
-	var containerTarget = document.getElementsByClassName('card-deck');
-	var containerLength = containerTarget.length;
-	for (var i = 0; i < containerLength; i++) {
-		containerTarget[i].style.cssText = 'display:none;';
-	}
-	document.getElementById('card-deck-id').style.cssText = 'display:none;';
-
-	// show forward arrow
-	document.getElementById('arrow-box-forward').style.cssText = null;
-
-	// show author info
-	document.getElementById('authorInfo').style.cssText = null;
-
-	// change header message
-	document.getElementById('header-message').innerHTML = "Tired of doing tedious networking calculations by hand? Want to know the Network IDs and IP addresses for a range of subnets? Then this tool is for you! Enter an IP with a CIDR value for classless addressing, or for a Class A, B, or C network, enter just the IP, and the CIDR will be automatically calculated. Say how many subnets you want from a network, and this tool will divide your address space evenly, so you'll have at least that many subnets. Easy!";
-
-	// show input fields
-	var containerTarget = document.getElementsByClassName('container-2');
-	var containerLength = containerTarget.length;
-	for (var i = 0; i < containerLength; i++) {
-		containerTarget[i].style.cssText = null;
-	}*/
 }
