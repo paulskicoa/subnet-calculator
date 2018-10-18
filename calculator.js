@@ -458,7 +458,7 @@ function decimalToBinary(decimal, bitsRequired) {
 }
 
 function transitionForward() {
-	// hide the input fields
+	/* // hide the input fields
 	var containerTarget = document.getElementsByClassName('container-2');
 	var containerLength = containerTarget.length;
 	for (var i = 0; i < containerLength; i++) {
@@ -478,11 +478,11 @@ function transitionForward() {
 	document.getElementById('arrow-box-back').style.cssText = null;
 
 	// show the results
-	document.getElementById('card-deck-id').style.cssText = null;
+	/*document.getElementById('card-deck-id').style.cssText = null;*/
 }
 
 function transitionBackward () {
-	clearResults();
+	/*clearResults();
 	// remove back arrow
 	document.getElementById('arrow-box-back').style.cssText = 'display:none;';
 
@@ -508,5 +508,5 @@ function transitionBackward () {
 	var containerLength = containerTarget.length;
 	for (var i = 0; i < containerLength; i++) {
 		containerTarget[i].style.cssText = null;
-	}
+	}*/
 }

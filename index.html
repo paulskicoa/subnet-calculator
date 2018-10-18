@@ -31,7 +31,7 @@
 	    <p class="lead" id="header-message">Tired of doing tedious networking calculations by hand? Want to know the Network IDs and IP addresses for a range of subnets? Then this tool is for you! Enter an IP with a CIDR value for classless addressing, or for a Class A, B, or C network, enter just the IP, and the CIDR will be automatically calculated. Say how many subnets you want from a network, and this tool will divide your address space evenly, so you'll have at least that many subnets. Easy!</p>
   	</div>
 	</div>
-	<div class="card-deck" id="card-deck-id" style="display:none;">
+	<div class="card-deck" id="card-deck-id">
 		  <div class="card bg-light mb-3" style="max-width: 18rem;">
 			  <div class="card-header">Your Input</div>
 			  <div class="card-body scroll">
@@ -61,7 +61,7 @@
 			   </div>
 			</div>
 	</div>	
-	<div class="container-2">
+	<div class="container-2" id="container-2-id">
 		<div class="input-group" id="input-group-1">
 		  <div class="input-group-prepend">
 		    <span class="input-group-text" id="ip-and-cidr-group">IP/CIDR</span>
@@ -104,7 +104,7 @@
 	</div>
 	
 	<script type="text/javascript" src="calculator.js"></script>
-	<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+	<script src="https://code.jquery.com/jquery-3.3.1.js" integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60=" crossorigin="anonymous"></script>
 	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
 
 	<!-- set enter key event listener on input fields -->
@@ -124,6 +124,29 @@
 				document.getElementById('arrow-box-forward').click();
 			}
 		});
+	</script>
+	<script type="text/javascript">
+		$( document ).ready(function() {
+			$('#card-deck-id').hide();
+			$('#arrow-box-forward').click(function() {
+				$('#container-2-id').fadeOut(300);
+				$('#arrow-box-forward').fadeOut(300);
+				$('#authorInfo').fadeOut(300);
+				document.getElementById('header-message').innerHTML = "Here are the results. Click the back button to edit your input and recalculate.";
+	    		$('#card-deck-id').delay(400).fadeIn(300);
+	    		$('#arrow-box-back').delay(400).fadeIn(300);
+			});
+
+			$('#arrow-box-back').click(function() {
+				clearResults();
+				$('#card-deck-id').fadeOut(300);
+	    		$('#container-2-id').delay(400).fadeIn(300);
+	    		$('#arrow-box-back').fadeOut(300);
+	    		$('#arrow-box-forward').delay(400).fadeIn(300);
+	    		$('#authorInfo').delay(400).fadeIn(300);
+	    		document.getElementById('header-message').innerHTML = "Tired of doing tedious networking calculations by hand? Want to know the Network IDs and IP addresses for a range of subnets? Then this tool is for you! Enter an IP with a CIDR value for classless addressing, or for a Class A, B, or C network, enter just the IP, and the CIDR will be automatically calculated. Say how many subnets you want from a network, and this tool will divide your address space evenly, so you'll have at least that many subnets. Easy!";
+			});
+    	});
 	</script>
 </body>
 </html>
