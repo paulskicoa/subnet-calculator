@@ -465,8 +465,8 @@ function transitionForward() {
 		containerTarget[i].style.cssText = 'display:none;';
 	}
 
-	// hide calculate button
-	document.getElementById('calcButton').style.cssText = 'display:none;';
+	// hide forward arrow (calculate button)
+	document.getElementById('arrow-box-forward').style.cssText = 'display:none;';
 
 	// hide author info
 	document.getElementById('authorInfo').style.cssText = 'display:none;';
@@ -475,19 +475,16 @@ function transitionForward() {
 	document.getElementById('header-message').innerHTML = "Here are the results. Click the back button to edit your input and recalculate.";
 
 	// show the back arrow
-	var arrowBox = document.getElementById('arrow-box');
-	arrowBox.style.cssText = null;
+	document.getElementById('arrow-box-back').style.cssText = null;
 
 	// show the results
-	var cardsTarget = document.getElementById('card-deck-id');
-	cardsTarget.style.cssText = null;
+	document.getElementById('card-deck-id').style.cssText = null;
 }
 
 function transitionBackward () {
 	clearResults();
 	// remove back arrow
-	var arrowBox = document.getElementById('arrow-box');
-	arrowBox.style.cssText = 'display:none;';
+	document.getElementById('arrow-box-back').style.cssText = 'display:none;';
 
 	// hide results cards
 	var containerTarget = document.getElementsByClassName('card-deck');
@@ -497,16 +494,14 @@ function transitionBackward () {
 	}
 	document.getElementById('card-deck-id').style.cssText = 'display:none;';
 
-	// show calculate button
-	document.getElementById('calcButton').style.cssText = null;
+	// show forward arrow
+	document.getElementById('arrow-box-forward').style.cssText = null;
 
 	// show author info
 	document.getElementById('authorInfo').style.cssText = null;
 
 	// change header message
-	document.getElementById('header-message').innerHTML = "Tired of doing tedious IP subnetting calculations by hand? (Who isn't?) " +
-	"Just enter the IP, and optionally, the CIDR number and how many subnets you want, and this tool will do the rest. " +
-	"If you don't enter a CIDR value, this tool can infer it from the first octet, as long as it would fit into Class A, B, or C. Neat!";
+	document.getElementById('header-message').innerHTML = "Tired of doing tedious networking calculations by hand? Want to know the Network IDs and IP addresses for a range of subnets? Then this tool is for you! Enter an IP with a CIDR value for classless addressing, or for a Class A, B, or C network, enter just the IP, and the CIDR will be automatically calculated. Say how many subnets you want from a network, and this tool will divide your address space evenly, so you'll have at least that many subnets. Easy!";
 
 	// show input fields
 	var containerTarget = document.getElementsByClassName('container-2');

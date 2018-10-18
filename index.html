@@ -16,19 +16,18 @@
 	<title>Subnet Calculator (beta)</title>
 </head>
 <body id="bootstrap-overrides">
+	<img src="open-iconic.svg" class="iconic-sprite" style="display:none;" />
 	<div class="jumbotron jumbotron-fluid">
 	<div class="container">
-			<div id="button-and-headline">
-			<img src="open-iconic.svg" class="iconic-sprite" style="display:none;" />
-			<div id="arrow-box" style="display:none;" onclick="transitionBackward();">
-				<svg viewBox="0 0 8 8" class="icon">
-					<use xlink:href="open-iconic.svg#arrow-circle-left" class="icon-arrow-circle-left" id="back-arrow"></use>
-				</svg>
-			</div>
-	    	<h1 class="display-4">Subnetting Made Easy</h1>
-	    	</div>
-		
-	    <p class="lead" id="header-message">Tired of doing tedious networking calculations by hand? Want to know the Network IDs and usable host addresses for a range of subnets? Then this tool is for you! Enter an IP with a CIDR value for classless addressing, or for a Class A, B, or C network, enter just the IP, and the CIDR will be calculated for you. Say how many subnets you want from a network, and this tool will divide your address space evenly to accomodate that. Easy!</p>
+		<div id="button-and-headline">
+		<div class="arrow-box" id="arrow-box-back" style="display:none;" onclick="transitionBackward();">
+			<svg viewBox="0 0 8 8" class="icon">
+				<use xlink:href="open-iconic.svg#arrow-circle-left" class="icon-arrow-circle-left" id="back-arrow"></use>
+			</svg>
+		</div>
+    	<h1 class="display-4">Subnetting Made Easy</h1>
+    	</div>
+	    <p class="lead" id="header-message">Tired of doing tedious networking calculations by hand? Want to know the Network IDs and IP addresses for a range of subnets? Then this tool is for you! Enter an IP with a CIDR value for classless addressing, or for a Class A, B, or C network, enter just the IP, and the CIDR will be automatically calculated. Say how many subnets you want from a network, and this tool will divide your address space evenly, so you'll have at least that many subnets. Easy!</p>
   	</div>
 	</div>
 	<div class="card-deck" id="card-deck-id" style="display:none;">
@@ -75,8 +74,10 @@
 		  <input type="text" aria-label="subnets" class="form-control" placeholder="Optional. The number of subnets to create. Defaults to 0." id="numSubnets">
 		</div>
 	</div>
-	<div class="calc-button">
-		<button type="button" class="btn btn-secondary" id="calcButton" onclick="getReturnCode(ipAndCidr.value, numSubnets.value);">Calculate</button>
+	<div class="arrow-box" id="arrow-box-forward" onclick="getReturnCode(ipAndCidr.value, numSubnets.value);">
+		<svg viewBox="0 0 8 8" class="icon">
+			<use xlink:href="open-iconic.svg#arrow-circle-right" class="icon-arrow-circle-right" id="forward-arrow"></use>
+		</svg>
 	</div>
 	<div class="author-info" id="authorInfo">
 		<p>An open-source webapp by Paul Skittlethorp.<a href="https://github.com/paulskicoa/subnet-calculator" target="_blank"> See this project on Github.</a></p>

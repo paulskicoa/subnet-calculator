@@ -33,21 +33,6 @@ body {
 	padding-bottom: 2rem;
 }
 
-.calc-button {
-	text-align: center;
-	margin: 2.5rem auto;
-}
-
-#calcButton {
-	background-color: white;
-	color: black;
-	transition: all 0.5s;
-}
-
-#calcButton:hover {
-	background-color: #FFAD2F;
-}
-
 div.jumbotron.jumbotron-fluid {
 	padding-top: 5rem;
 	margin-bottom: 0;
@@ -102,6 +87,13 @@ ul {
 	margin-top: 2rem;
 }
 
+#button-and-headline {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding-bottom: 1rem;
+}
+
 .icon {
 	width: 3rem;
 	height: 3rem;
@@ -112,29 +104,36 @@ ul {
 	transition: fill 0.5s;
 }
 
-#arrow-box:hover .icon-arrow-circle-left {
+#arrow-box-back:hover .icon-arrow-circle-left {
 	fill: #FFAD2F;
 }
 
-#arrow-box:hover {
+#arrow-box-back:hover {
 	transform: scale(1.1);
 	cursor: pointer;
 }
 
-#button-and-headline {
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	padding-bottom: 1rem;
-}
-
-#arrow-box {
+#arrow-box-back {
 	margin-right: 2rem;
 	transition: all 0.5s;
 }
 
-.display-4 {
-	
+.icon-arrow-circle-right {
+	fill: white;
+	transition: fill 0.5s;
+}
+
+#arrow-box-forward:hover .icon-arrow-circle-right {
+	fill: #FFAD2F;
+}
+
+#arrow-box-forward:hover {
+	transform: scale(1.1);
+	cursor: pointer;
+}
+
+#arrow-box-forward {
+	transition: all 0.5s;
 }
 
 input[type="text"], textarea {
