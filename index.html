@@ -12,6 +12,7 @@
 
        // Do the injection
        SVGInjector(mySVGsToInject);
+
 	</script>
 	<title>Subnet Calculator (beta)</title>
 </head>
@@ -105,34 +106,24 @@
 	<script type="text/javascript" src="calculator.js"></script>
 	<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
 	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
-	<!-- this jQuery is used to change css styling of one div (not parent or sibling, which can be done with css) when selecting another div -->
-	<!-- <script type="text/javascript">
-		$('#ipAndCidr').on({
-			focus: function() {
-				$('#ip-and-cidr-group').addClass('focused');
-				// $('#ipAndCidr').addClass('focused-border');
-			},
 
-			blur: function() {
-				$('#ip-and-cidr-group').removeClass('focused');
-				// $('#ipAndCidr').removeClass('focused-border');
+	<!-- set enter key event listener on input fields -->
+	<script type="text/javascript">
+		var ipAndCidrInput = document.getElementById("ipAndCidr");
+		ipAndCidrInput.addEventListener("keyup", function(event) {
+			event.preventDefault();
+			if(event.keyCode === 13) { // enter was pressed
+				document.getElementById('arrow-box-forward').click();
 			}
-		})
-		$('#numSubnets').on({
-			focus: function() {
-				$('#num-networks-group').addClass('focused');
-				// $('#numSubnets').addClass('focused-border');
-			},
+		});
 
-			blur: function() {
-				$('#num-networks-group').removeClass('focused');
-				// $('#numSubnets').removeClass('focused-border');
+		var subnetsInput = document.getElementById("ipAndCidr");
+		subnetsInput.addEventListener("keyup", function(event) {
+			event.preventDefault();
+			if(event.keyCode === 13) { // enter was pressed
+				document.getElementById('arrow-box-forward').click();
 			}
-		})
-
-		/*$("input[placeholder]").each(function () {
-        $(this).attr('size', $(this).attr('placeholder').length);
-    		});*/
-	</script> -->
+		});
+	</script>
 </body>
 </html>

@@ -138,9 +138,6 @@ ul {
 #arrow-box-forward {
 	transition: all 0.5s;
 	margin-left: 2rem;
-}
-
-#forward-arrow {
 	position: relative;
 	top: 0.25rem;
 }
