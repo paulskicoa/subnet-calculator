@@ -20,19 +20,12 @@ body {
 	margin: 0.5rem;
 }
 
-/*.input-group>.input-group-prepend {
-    flex: 0 0 20%;
-}
-
-.input-group .input-group-text {
-    width: 100%;
-}*/
-
 .input-group-text {
 	border: 0;
 	color: white;
 	background-color: #73A1D4;
-	/*border-radius: 0.4rem;*/
+	border-top-left-radius: 0.4rem;
+	border-bottom-left-radius: 0.4rem;
 }
 
 div.jumbotron.jumbotron-fluid {
@@ -140,7 +133,7 @@ ul {
 	transition: all 0.5s;
 	margin-left: 2rem;
 	position: relative;
-	top: 0.25rem;
+	top: 0.55rem;
 }
 
 /* this block gets rid of bootstrap blue highlight on form field focus */
@@ -150,15 +143,12 @@ input[type="text"], textarea {
 	border: 1px solid #ccc !important;
 }
 
-#ip-and-cidr-group {
-	border-top-left-radius: 0.4rem;
-	border-bottom-left-radius: 0.4rem;
+select {
+	outline: none;
+	box-shadow: none !important;
+	border: 1px solid #ccc !important;
 }
 
-#num-networks-group {
-	border-top-left-radius: 0.4rem;
-	border-bottom-left-radius: 0.4rem;
-}
 
 #ipAndCidr {
 	border-top-right-radius: 0.4rem;
@@ -214,4 +204,12 @@ a:hover {
 
 .list-group-item {
 	flex: 1;
+}
+
+.form-control {
+	height: 3rem;
+}
+
+.custom-select {
+	height: 3rem;
 }

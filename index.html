@@ -29,7 +29,7 @@
     	<h1 class="display-4">Subnetting Made Easy</h1>
     	</div>
 	    <div id="header-message-intro">
-	    	<p class="lead">Tired of doing tedious networking calculations by hand? Want to know the Network IDs and IP addresses for a range of subnets? Then this tool is for you! Enter an IP with a CIDR value for classless addressing, or for a Class A, B, or C network, enter just the IP, and the CIDR will be automatically calculated. Say how many subnets you want from a network, and this tool will divide your address space evenly, so you'll have at least that many subnets. Easy!</p>
+	    	<p class="lead">Tired of doing tedious networking calculations by hand? Want to know the Network IDs and IP addresses for a range of subnets? Then this tool is for you! Enter an IP with a CIDR value for classless addressing, or for a Class A, B, or C network, enter just the IP, and the CIDR will be automatically calculated. Pick the number of subnets you want from a network, and this tool will divide your address space evenly, so you'll have at least that many subnets. Easy!</p>
 	    </div>
 	    <div id="header-message-results" style="display: none;">
 	    	<p class="lead">Here are the results. Click the back button to edit your input and recalculate.</p>
@@ -67,23 +67,48 @@
 			</div>
 	</div>	
 	<div class="container-2" id="container-2-id">
-		<div class="input-group" id="input-group-1">
+		<div class="input-group mb-3" id="input-group-1">
 		  <div class="input-group-prepend">
 		    <span class="input-group-text" id="ip-and-cidr-group">IP/CIDR</span>
 		  </div>
 		  <input type="text" aria-label="ipAddress" class="form-control" placeholder="e.g. 192.168.1.5/24 or 192.42.53.12" id="ipAndCidr">
 		</div>
-		<div class="input-group" id="input-group-2">
+
+		<!-- <div class="input-group" id="input-group-2">
 		  <div class="input-group-prepend">
 		    <span class="input-group-text" id="num-networks-group">Subnets</span>
 		  </div>
 		  <input type="text" aria-label="subnets" class="form-control" placeholder="Optional. The number of subnets to create. Defaults to 0." id="numSubnets">
+		</div> -->
+		
+		<div class="input-group mb-3">
+		  <div class="input-group-prepend">
+		    <label class="input-group-text" for="inputGroupSelect01">Subnets</label>
+		  </div>
+		  <select class="custom-select" id="numSubnets">
+		    <option selected value="0">0 (only 1 network)</option>
+		    <option value="1">2</option>
+		    <option value="2">4</option>
+		    <option value="3">8</option>
+		    <option value="4">16</option>
+		    <option value="5">32</option>
+		    <option value="6">64</option>
+		    <option value="7">128</option>
+		    <option value="8">256</option>
+		    <option value="9">512</option>
+		    <option value="10">1024</option>
+		    <option value="11">2048</option>
+		    <option value="12">4096</option>
+		    <option value="13">8192</option>
+		    <option value="14">16384</option>
+		  </select>
 		</div>
+
 		<div class="arrow-box" id="arrow-box-forward">
 		<svg viewBox="0 0 8 8" class="icon">
 			<use xlink:href="open-iconic.svg#arrow-circle-right" class="icon-arrow-circle-right" id="forward-arrow"></use>
 		</svg>
-	</div>
+		</div>
 	</div>
 	<div class="author-info" id="authorInfo">
 		<p>An open-source webapp by Paul Skittlethorp.<a href="https://github.com/paulskicoa/subnet-calculator" target="_blank"> See this project on Github.</a></p>
@@ -122,7 +147,7 @@
 			}
 		});
 
-		var subnetsInput = document.getElementById("ipAndCidr");
+		var subnetsInput = document.getElementById("numSubnets");
 		subnetsInput.addEventListener("keyup", function(event) {
 			event.preventDefault();
 			if(event.keyCode === 13) { // enter was pressed
