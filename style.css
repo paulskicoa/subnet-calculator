@@ -45,7 +45,8 @@ div.jumbotron.jumbotron-fluid {
 	/* margins to offset the -15px set by bootstrap, otherwise the content will overflow */
 	margin-left: 0px;
 	margin-right: 0px;
-	max-height: 19rem; /* about 300px at default 16px = 1rem */
+	max-height: 20rem; /* 320px at default 16px = 1rem */
+	align-items: flex-start; /* columns will be different widths */
 	
 }
 
@@ -195,10 +196,22 @@ a:hover {
 	text-decoration: none;
 }
 
-/*.list-group-item {
+#modal-close {
+	background-color: #2C6BB1;
+}
+
+#invalidInputModalTitle {
+	padding-left: 11.5rem;
+}
+
+.card-body-scroll {
 	height: 100%;
 }
 
 .list-group {
 	height: 100%;
-}*/
+}
+
+.list-group-item {
+	flex: 1;
+}

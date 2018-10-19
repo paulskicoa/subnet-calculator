@@ -19,7 +19,7 @@ function getReturnCode(ipWithCIDR, numberOfSubnets) {
 
 function validateSubnets(numberOfSubnets) {
 		numberOfSubnets = parseInt(numberOfSubnets);
-		if(numberOfSubnets >= 0 && numberOfSubnets <= Number.MAX_SAFE_INTEGER) {return 0;} // not a realistic upper bound, but will do for now
+		if(numberOfSubnets >= 0 && numberOfSubnets <= 16384) {return 0;} // limited to 14 bits for performance reasons
 		// num subnets out of bounds
 		return -5;
 }
