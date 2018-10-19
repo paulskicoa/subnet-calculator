@@ -71,7 +71,7 @@
 		  <div class="input-group-prepend">
 		    <span class="input-group-text" id="ip-and-cidr-group">IP/CIDR</span>
 		  </div>
-		  <input type="text" aria-label="ipAddress" class="form-control" placeholder="e.g. 192.168.1.5/24 or 192.42.53.12" id="ipAndCidr">
+		  <input type="text" aria-label="ipAddress" class="form-control" placeholder="e.g. 192.168.1.5/24 or 192.42.53.12" id="ipAndCidr" onblur="validateInput(ipAndCidr.value);">
 		</div>
 
 		<!-- <div class="input-group" id="input-group-2">
@@ -85,7 +85,7 @@
 		  <div class="input-group-prepend">
 		    <label class="input-group-text" for="inputGroupSelect01">Subnets</label>
 		  </div>
-		  <select class="custom-select" id="numSubnets">
+		  <select class="subnet-select" id="numSubnets">
 		    <option selected value="0">0 (only 1 network)</option>
 		    <option value="1">2</option>
 		    <option value="2">4</option>
@@ -138,7 +138,7 @@
 	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
 
 	<!-- set enter key event listener on input fields -->
-	<script type="text/javascript">
+	<!-- <script type="text/javascript">
 		var ipAndCidrInput = document.getElementById("ipAndCidr");
 		ipAndCidrInput.addEventListener("keyup", function(event) {
 			event.preventDefault();
@@ -154,25 +154,18 @@
 				document.getElementById('arrow-box-forward').click();
 			}
 		});
-	</script>
+	</script> -->
 	<script type="text/javascript">
 		$( document ).ready(function() {
 			$('#arrow-box-forward').click(function() {
-				var code = getReturnCode(ipAndCidr.value, numSubnets.value);
-				// for now, just check if a non-zero (i.e. error code) was returned, and if so, display the invalid input modal to the user
-				if(code < 0) {
-					$('#invalidInputModal').modal('show');
-				}
-
-				else {
-					$('#container-2-id').fadeOut(300);
-					$('#arrow-box-forward').fadeOut(300);
-					$('#authorInfo').fadeOut(300);
-					$('#header-message-intro').fadeOut(300);
-	    			$('#header-message-results').delay(400).fadeIn(300);
-	    			$('#card-deck-id').delay(400).fadeIn(300);
-	    			$('#arrow-box-back').delay(400).fadeIn(300);
-				}			
+				processInput(numSubnets.value, )		
+				$('#container-2-id').fadeOut(300);
+				$('#arrow-box-forward').fadeOut(300);
+				$('#authorInfo').fadeOut(300);
+				$('#header-message-intro').fadeOut(300);
+    			$('#header-message-results').delay(400).fadeIn(300);
+    			$('#card-deck-id').delay(400).fadeIn(300);
+    			$('#arrow-box-back').delay(400).fadeIn(300);					
 			});
 
 			$('#arrow-box-back').click(function() {

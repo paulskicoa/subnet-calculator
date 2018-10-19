@@ -6,43 +6,84 @@ const cidrRegex = /.*\/\d{1,2}$/;
 // yes, yes, I know. all global functions. I'll refactor it soon.
 
 // used to determine which error a user made when giving an input 
-function getReturnCode(ipWithCIDR, numberOfSubnets) {
-
-	if(numberOfSubnets === '' || numberOfSubnets === '0') { // both inputs mean all IPs should be associated with one network ID
-		// but for calculation purposes, 0 will be adjusted to 1
-		numberOfSubnets = '1';
-	}
-
-	var returnCode = validateInput(ipWithCIDR, numberOfSubnets);
+function getReturnCode(ipWithCIDR) {
+	var returnCode = validateInput(ipWithCIDR);
 	return returnCode;
 }
 
-function validateSubnets(numberOfSubnets) {
+function fixSubnetSelectOptions(cidr) {
+	// ip and cidr are valid if this method gets called
+	// restore all the options that exist by default
+	// first remove all options so we're not adding duplicates
+
+	$('#numSubnets').empty();
+	// add all options
+	var subnetsSelect = document.getElementById('numSubnets');
+	for(i = 0; i < 15; i++) {
+		var option = document.createElement('option');
+		option.value = i;
+		if(i === 0) {
+			option.innerHTML = '0 (only 1 network)';
+		}
+		else {
+			option.innerHTML = '' + 2**i;
+		}
+		subnetsSelect.appendChild(option);
+	}
+
+	var numHostBits = 32 - parseInt(cidr);
+	var maxBitsForSubnets = numHostBits - 2; // this ensures there will be at least 2 usable host IPs per subnet, i.e. the smallest useful subnet
+	// remove all the select options with an id value greater than this number
+	var optionsToDelete = [];
+	for (var i = maxBitsForSubnets + 1; i < 15; i++) {
+		optionsToDelete.push(i.toString());
+	}
+	$('select option').filter(function() {
+		return $.inArray(this.value, optionsToDelete) !== -1
+	}).remove();
+}
+
+function handleBadInput(errorCode) {
+	// show invalid input modal, clear the ip and cidr input box
+	// later: use error code to customize text the modal displays for a specific kind of input error
+	// -1 = invalid IP, no cidr given; -3 = couldn't infer cidr from IP; -2=invalid IP/cidr combo; -4 = invalid cidr
+	$('#invalidInputModal').modal('show');
+	document.getElementById('ipAndCidr').value = '';
+	return;
+}
+
+/*function validateSubnets(numberOfSubnets) {
 		numberOfSubnets = parseInt(numberOfSubnets);
 		if(numberOfSubnets >= 0 && numberOfSubnets <= 16384) {return 0;} // limited to 14 bits for performance reasons
 		// num subnets out of bounds
 		return -5;
-}
+}*/
 
-function validateInput(ipWithCIDR, numberOfSubnets) {
+function validateInput(ipWithCIDR) {
 	clearResults();
 	var ip; // e.g. '192.168.1.1'
 	var cidr; // e.g. '24'
 	var cidrInferred = false; // boolean
 
 	// check if number of subnets is valid
-	var subnetsResultCode = validateSubnets(numberOfSubnets);
-	if(numberOfSubnets === -5) {return -5};
+	/*var subnetsResultCode = validateSubnets(numberOfSubnets);
+	if(numberOfSubnets === -5) {return -5};*/
 
 	// attempt to infer the CIDR value from classful addressing if it was omitted
 	
 	if(ipWithCIDR.match(ipOnlyRegex) !== null) { // only IP was given
 		// ensure the IP is valid
-		if(!isValidIP(ipWithCIDR)) {return -1;} // invalid IP given. alert the user
+		if(!isValidIP(ipWithCIDR)) { // invalid IP given. alert the user
+			handleBadInput(-1);
+			return;
+		} 
 		ip = ipWithCIDR;
 		// the IP is valid, but no CIDR was given. attempt to infer its value from first octet number
 		var result = attemptCidrInference(ipWithCIDR);
-		if(result === -3) {return -3} // couldn't infer CIDR from IP
+		if(result === -3) { // couldn't infer CIDR from IP
+			handleBadInput(-3);
+			return;
+		} 
 		// we have valid IP and CIDR. proceed
 		cidr = result;
 		cidrInferred = true;
@@ -51,7 +92,8 @@ function validateInput(ipWithCIDR, numberOfSubnets) {
 	else {
 		// check for a valid IP and CIDR combo
 		if(ipWithCIDR.match(ipWithCidrRegex) === null) { // invalid input
-			return -2;
+			handleBadInput(-2);
+			return;
 		}
 
 		// IP and CIDR have right format, but possibly not the valid numerical range. split into IP and CIDR parts and validate both
@@ -59,15 +101,27 @@ function validateInput(ipWithCIDR, numberOfSubnets) {
 		var ipWithCIDRArray = ipWithCIDR.split('/'); // e.g. '192.168.1.0/24' becomes [192.168.1.0, 24]
 		// strip any whitespace from the end of the IP
 		var ipCandidate = ipWithCIDRArray[0].trim();
-		if(!isValidIP(ipCandidate)) {return -1;} // invalid IP given
+		if(!isValidIP(ipCandidate)) { // invalid IP given
+			handleBadInput(-1);
+			return;
+		} 
 		ip = ipCandidate;
 		// IP is valid, now check CIDR
 		var cidrCandidate = ipWithCIDRArray[1].trim();
-		if(!isValidCidr(cidrCandidate)) {return -4};
+		if(!isValidCidr(cidrCandidate)) { // invalid cidr
+			handleBadInput(-4);
+			return;
+		} 
+
 		// we have valid IP and CIDR. proceed
 		cidr = cidrCandidate;
 	}
 
+	fixSubnetSelectOptions(cidr);
+
+}
+
+function processInput(numberOfSubnets, cidr) {
 	var octetArrayBinary = [];
 	var octetArrayDecimal = ip.split('.'); // split IP into octets
 	var CIDR = parseInt(cidr);
@@ -102,8 +156,7 @@ function validateInput(ipWithCIDR, numberOfSubnets) {
 	console.log('Network ID (binary) :', networkIdBinary);
 	var startingNetworkId = networkIdBinary;
 
-	processSubnets(numberOfSubnets, CIDR, startingNetworkId);
-	return 0; // ran successfully
+	processSubnets(numberSubnets.value, CIDR, startingNetworkId);
 }
 
 function isValidIP(ip) {
@@ -123,7 +176,7 @@ function isValidIP(ip) {
 function isValidCidr(str) {
 	var cidrCandidate = customParseInt(str);
 	if(cidrCandidate === -1) {return false;}
-	if(cidrCandidate < 0 || cidrCandidate > 32) {return false;}
+	if(cidrCandidate < 0 || cidrCandidate > 31) {return false;}
 	return true;
 }
 
