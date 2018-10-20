@@ -120,10 +120,12 @@ function validateInput(ipWithCIDR) {
 	}
 
 	fixSubnetSelectOptions();
+	return 0; 
 
 }
 
 function processInput() {
+	validateInput(document.getElementById('ipAndCidr').value);
 	var octetArrayBinary = [];
 	var octetArrayDecimal = ip.split('.'); // split IP into octets
 	octetArrayDecimal.forEach(function(octetDecimal) {
@@ -180,7 +182,7 @@ function isValidIP(ip) {
 function isValidCidr(str) {
 	var cidrCandidate = customParseInt(str);
 	if(cidrCandidate === -1) {return false;}
-	if(cidrCandidate < 0 || cidrCandidate > 31) {return false;}
+	if(cidrCandidate < 1 || cidrCandidate > 31) {return false;}
 	return true;
 }
 
@@ -422,7 +424,6 @@ function getUsableAddressRanges(networkIdsBinary, newCIDR) {
 		firstIp = tempNetId + '0'.repeat(numHostBits - 1) + '1';
 
 		// make host bits all 1s ending in 0 for last address
-		// debugger;
 		secondIp = tempNetId + '1'.repeat(numHostBits - 1) + '0';
 
 		// convert both IPs to decimal strings
@@ -485,9 +486,6 @@ function decimalToBinary(decimal, bitsRequired) {
 		}
 	}
 
-	/*while(binaryString.length < bitsRequired) {
-		binaryString = '0' + binaryString;
-	}*/
 	binaryString = binaryString.substring(binaryString.length - bitsRequired);
 	return binaryString;
 

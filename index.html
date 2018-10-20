@@ -118,13 +118,13 @@
 	  <div class="modal-dialog modal-dialog-centered" role="document">
 	    <div class="modal-content">
 	      <div class="modal-header">
-	        <h5 class="modal-title" id="invalidInputModalTitle">Invalid Input</h5>
+	        <h5 class="modal-title" id="invalidInputModalTitle">Invalid IP or CIDR</h5>
 	        <button id="modal-close-top" type="button" class="close" data-dismiss="modal" aria-label="Close">
 	          <span aria-hidden="true">&times;</span>
 	        </button>
 	      </div>
 	      <div class="modal-body">
-	        One or more values you entered are invalid. The IP and CIDR should look like X.X.X.X(/Y), where X is a whole number between 0 and 255 and Y (optional) is a whole number between 0 and 32. The number of subnets must be a whole number greater than or equal to 1.
+	        The IP, CIDR, or both are invalid or empty. You must fill in the left field with at least an IP before filling in the right field, as the IP/CIDR is used to determine possible values for the number of subnets. The IP and CIDR should look like X.X.X.X(/Y), where X is a whole number between 0 and 255 and Y (optional) is a whole number between 1 and 31.
 	      </div>
 	      <div class="modal-footer">
 	        <button type="button" class="btn btn-secondary" id="modal-close" data-dismiss="modal">Close</button>
@@ -158,14 +158,16 @@
 	<script type="text/javascript">
 		$( document ).ready(function() {
 			$('#arrow-box-forward').click(function() {
-				processInput();		
-				$('#container-2-id').fadeOut(300);
-				$('#arrow-box-forward').fadeOut(300);
-				$('#authorInfo').fadeOut(300);
-				$('#header-message-intro').fadeOut(300);
-    			$('#header-message-results').delay(400).fadeIn(300);
-    			$('#card-deck-id').delay(400).fadeIn(300);
-    			$('#arrow-box-back').delay(400).fadeIn(300);					
+				if (validateInput(document.getElementById('ipAndCidr').value) === 0) {
+					processInput();
+					$('#container-2-id').fadeOut(300);
+					$('#arrow-box-forward').fadeOut(300);
+					$('#authorInfo').fadeOut(300);
+					$('#header-message-intro').fadeOut(300);
+	    			$('#header-message-results').delay(400).fadeIn(300);
+	    			$('#card-deck-id').delay(400).fadeIn(300);
+	    			$('#arrow-box-back').delay(400).fadeIn(300);
+				}									
 			});
 
 			$('#arrow-box-back').click(function() {
