@@ -71,7 +71,7 @@
 		  <div class="input-group-prepend">
 		    <span class="input-group-text" id="ip-and-cidr-group">IP/CIDR</span>
 		  </div>
-		  <input type="text" aria-label="ipAddress" class="form-control" placeholder="e.g. 192.168.1.5/24 or 192.42.53.12" id="ipAndCidr" onblur="validateInput(ipAndCidr.value);">
+		  <input type="text" aria-label="ipAddress" class="form-control" placeholder="e.g. 192.168.1.5/24 or 192.42.53.12" id="ipAndCidr" onfocus="rebuildSelectOptions();" onblur="validateInput(ipAndCidr.value);">
 		</div>
 
 		<!-- <div class="input-group" id="input-group-2">
@@ -81,7 +81,7 @@
 		  <input type="text" aria-label="subnets" class="form-control" placeholder="Optional. The number of subnets to create. Defaults to 0." id="numSubnets">
 		</div> -->
 		
-		<div class="input-group mb-3">
+		<div class="input-group mb-3" id="selector-input-group">
 		  <div class="input-group-prepend">
 		    <label class="input-group-text" for="inputGroupSelect01">Subnets</label>
 		  </div>

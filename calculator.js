@@ -14,11 +14,7 @@ function getReturnCode(ipWithCIDR) {
 	return returnCode;
 }
 
-function fixSubnetSelectOptions() {
-	// ip and cidr are valid if this method gets called
-	// restore all the options that exist by default
-	// first remove all options so we're not adding duplicates
-
+function rebuildSelectOptions() {
 	$('#numSubnets').empty();
 	// add all options
 	var subnetsSelect = document.getElementById('numSubnets');
@@ -33,7 +29,12 @@ function fixSubnetSelectOptions() {
 		}
 		subnetsSelect.appendChild(option);
 	}
+}
 
+function fixSubnetSelectOptions() {
+	// ip and cidr are valid if this method gets called
+	// restore all the options that exist by default
+	
 	var numHostBits = 32 - CIDR;
 	var maxBitsForSubnets = numHostBits - 2; // this ensures there will be at least 2 usable host IPs per subnet, i.e. the smallest useful subnet
 	// remove all the select options with an id value greater than this number

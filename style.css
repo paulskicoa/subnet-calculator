@@ -11,13 +11,16 @@ body {
 
 .container-2 {
 	display: flex;
-	width: 80%;
-	margin: 0 auto;
+	justify-content: center;
 	padding-bottom: 2rem;
 }
 
 .input-group {
 	margin: 0.5rem;
+}
+
+#input-group-1 {
+	width: 23rem;
 }
 
 .input-group-text {
@@ -212,4 +215,10 @@ a:hover {
 
 .subnet-select {
 	height: 3rem;
+	width: 70%;
+	padding-left: 12px;
+}
+
+#selector-input-group {
+	width: 23rem;
 }
