@@ -2,6 +2,9 @@ const powersOfTwo = [128, 64, 32, 16, 8, 4, 2, 1];
 const ipOnlyRegex = /^(\d\d?\d?)\.(\d\d?\d?)\.(\d\d?\d?)\.(\d\d?\d?)$/;
 const ipWithCidrRegex = /^(\d\d?\d?)\.(\d\d?\d?)\.(\d\d?\d?)\.(\d\d?\d?)\s*\/\d{1,2}$/;
 const cidrRegex = /.*\/\d{1,2}$/;
+var CIDR;
+var ip;
+var cidrInferred;
 
 // yes, yes, I know. all global functions. I'll refactor it soon.
 
@@ -11,7 +14,7 @@ function getReturnCode(ipWithCIDR) {
 	return returnCode;
 }
 
-function fixSubnetSelectOptions(cidr) {
+function fixSubnetSelectOptions() {
 	// ip and cidr are valid if this method gets called
 	// restore all the options that exist by default
 	// first remove all options so we're not adding duplicates
@@ -31,7 +34,7 @@ function fixSubnetSelectOptions(cidr) {
 		subnetsSelect.appendChild(option);
 	}
 
-	var numHostBits = 32 - parseInt(cidr);
+	var numHostBits = 32 - CIDR;
 	var maxBitsForSubnets = numHostBits - 2; // this ensures there will be at least 2 usable host IPs per subnet, i.e. the smallest useful subnet
 	// remove all the select options with an id value greater than this number
 	var optionsToDelete = [];
@@ -61,9 +64,7 @@ function handleBadInput(errorCode) {
 
 function validateInput(ipWithCIDR) {
 	clearResults();
-	var ip; // e.g. '192.168.1.1'
-	var cidr; // e.g. '24'
-	var cidrInferred = false; // boolean
+	cidrInferred = false; // boolean
 
 	// check if number of subnets is valid
 	/*var subnetsResultCode = validateSubnets(numberOfSubnets);
@@ -85,7 +86,7 @@ function validateInput(ipWithCIDR) {
 			return;
 		} 
 		// we have valid IP and CIDR. proceed
-		cidr = result;
+		CIDR = result;
 		cidrInferred = true;
 	}
 
@@ -114,17 +115,16 @@ function validateInput(ipWithCIDR) {
 		} 
 
 		// we have valid IP and CIDR. proceed
-		cidr = cidrCandidate;
+		CIDR = parseInt(cidrCandidate);
 	}
 
-	fixSubnetSelectOptions(cidr);
+	fixSubnetSelectOptions();
 
 }
 
-function processInput(numberOfSubnets, cidr) {
+function processInput() {
 	var octetArrayBinary = [];
 	var octetArrayDecimal = ip.split('.'); // split IP into octets
-	var CIDR = parseInt(cidr);
 	octetArrayDecimal.forEach(function(octetDecimal) {
 		var octetBinary = getBinaryStringForIP(octetDecimal);
 		octetArrayBinary.push(octetBinary);
@@ -156,7 +156,10 @@ function processInput(numberOfSubnets, cidr) {
 	console.log('Network ID (binary) :', networkIdBinary);
 	var startingNetworkId = networkIdBinary;
 
-	processSubnets(numberSubnets.value, CIDR, startingNetworkId);
+	var select = document.getElementById('numSubnets');
+	var selectedOption = select.options[select.selectedIndex].value;
+	
+	processSubnets(selectedOption, startingNetworkId);
 }
 
 function isValidIP(ip) {
@@ -192,7 +195,7 @@ function customParseInt(str) { // used to validate IP or CIDR
 	}
 }
 
-function attemptCidrInference(ip) {
+function attemptCidrInference() {
 	var octetArrayDecimal = ip.split('.');
 	var firstOctet = parseInt(octetArrayDecimal[0]);
 	if(firstOctet >= 0 && firstOctet <= 127) {return 8;} // Class A
@@ -203,7 +206,7 @@ function attemptCidrInference(ip) {
 	return -3;
 }
 
-function processSubnets(selectedValue, CIDR, startingNetworkId) {
+function processSubnets(selectedValue, startingNetworkId) {
 	// holds the network ids for all subnets (in decimal)
 	var networkIds = [];
 	var networkIdsBinary = []; // for use with the getUsableAddressRanges() function
@@ -215,24 +218,9 @@ function processSubnets(selectedValue, CIDR, startingNetworkId) {
 	var formattedNetworkId = getIpAsString(getDecimalForNetworkId(startingNetworkId));
 	networkIds.push(formattedNetworkId);
 	
+	var numberOfSubnets = 2**parseInt(selectedValue);
 
-	// 32 - CIDR gives host bits and also how many could be borrowed for subnetting.
-	// n bits borrowed for subnetting gives max of 2^n subnets
-	// 0 bits -> 1 subnet, 1 bit 2 subnets, 2 bits 4 subnets, 3 bits 8 subnets, etc
-	// this uses my formula N = ceil(log_2(n)) to calculate bits N required to create at least n subnets
-	var selectedValue = parseInt(selectedValue);
-	var bitsRequired = Math.ceil((Math.log2(selectedValue)));
-	var numberOfSubnets = 2 ** bitsRequired; // e.g. 2^3 = 8 subnets if the user-selected value of n was 6
-
-	if (selectedValue === numberOfSubnets) {
-		displayInputSummary('Subnets: ' + selectedValue);
-	}
-	else {
-		displayInputSummary('Subnets: ' + selectedValue + ', adjusted to ' + numberOfSubnets);
-	}
-	
-	console.log('Number of subnets selected:', selectedValue)
-	console.log('Number of subnets to be created:', numberOfSubnets,'(using', bitsRequired, 'bits)');
+	var bitsRequired = parseInt(selectedValue);
 
 	// divide the address space as required. the borrowed bits will now be part of the network ID. 
 	// e.g. if we take 192.168.1.0/24 and borrow 2 bits, we get 4 subnets that are /26.
