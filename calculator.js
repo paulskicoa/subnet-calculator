@@ -142,7 +142,7 @@ function processInput() {
 	displayInputSummary('IP: ' + decimalIpString);
 	console.log('IP address given: ', decimalIpString);
 
-	displayInputSummary('CIDR: /' + CIDR + (cidrInferred? ' (inferred)':''));
+	displayInputSummary('CIDR: /' + CIDR + (cidrInferred? ' (inferred from IP class)':''));
 	console.log('CIDR value given: /', CIDR);
 
 	// print the subnet mask in binary
@@ -151,7 +151,7 @@ function processInput() {
 
 	// print the subnet mask in decimal
 	var netmaskDecimal = getIpAsString(getDecimalFromBinaryIP(netmask));
-	displayStatistics('Subnet Mask: ' + netmaskDecimal);
+	// displayStatistics('Subnet Mask: ' + netmaskDecimal);
 	console.log('Netmask given: ', netmaskDecimal);
 
 	// get the network ID as a binary string
@@ -222,8 +222,10 @@ function processSubnets(selectedValue, startingNetworkId) {
 	networkIds.push(formattedNetworkId);
 	
 	var numberOfSubnets = 2**parseInt(selectedValue);
+	displayInputSummary('Subnets: ' + numberOfSubnets);
 
 	var bitsRequired = parseInt(selectedValue);
+	displayStatistics('Bits borrowed for subnets: ' + bitsRequired);
 
 	// divide the address space as required. the borrowed bits will now be part of the network ID. 
 	// e.g. if we take 192.168.1.0/24 and borrow 2 bits, we get 4 subnets that are /26.
@@ -237,6 +239,8 @@ function processSubnets(selectedValue, startingNetworkId) {
 	// adjust the subnet mask by the number of bits required to make the subnets
 	var newCIDR = startingCIDR + bitsRequired;
 	var newNetmask = getSubnetMaskFromCIDR(newCIDR); //e.g. '11111111111111111111111111000000' for the /26 above
+	var decimalStringNetmask = getIpAsString(getDecimalFromBinaryIP(newNetmask));
+	displayStatistics('/' + newCIDR + ' netmask: ' + decimalStringNetmask);
 	
 	// need to grab the starting network ID as a binary string. e.g. '11000000101010000000000100000000' for 192.168.1.0
 	// using the subnet mask, in the network ID, flip the bit in the position of the rightmost 1 of the mask (e.g. pos. 25 in the /26 mask above)
