@@ -151,4 +151,27 @@ class NetworkUtils {
 		console.log(network.ip, network.cidr, network.numSubnets);
 		return network;
 	}
+
+	clearResults() {
+		var networkIdList = document.getElementById('network-id-list');
+		var addressRangeList = document.getElementById('address-range-list');
+		var inputSummaryList = document.getElementById('input-summary');
+		var statisticsList = document.getElementById('statistics');
+
+		while(networkIdList.firstChild) {
+			networkIdList.removeChild(networkIdList.firstChild);
+		}
+
+		while(addressRangeList.firstChild) {
+			addressRangeList.removeChild(addressRangeList.firstChild);
+		}
+
+		while(inputSummaryList.firstChild) {
+			inputSummaryList.removeChild(inputSummaryList.firstChild);
+		}
+
+		while(statisticsList.firstChild) {
+			statistics.removeChild(statistics.firstChild);
+		}	
+	}
 }
