@@ -71,7 +71,8 @@
 		  <div class="input-group-prepend">
 		    <span class="input-group-text" id="ip-and-cidr-group">IP/CIDR</span>
 		  </div>
-		  <input type="text" aria-label="ipAddress" class="form-control" placeholder="e.g. 192.168.1.5/24 or 192.42.53.12" id="ipAndCidr" onfocus="rebuildSelectOptions();" onblur="validateInput(ipAndCidr.value);">
+		  <!-- <input type="text" aria-label="ipAddress" class="form-control" placeholder="e.g. 192.168.1.5/24 or 192.42.53.12" id="ipAndCidr" onfocus="rebuildSelectOptions();" onblur="validateInput(ipAndCidr.value);"> -->
+		  <input type="text" aria-label="ipAddress" class="form-control" placeholder="e.g. 192.168.1.5/24 or 192.42.53.12" id="ipAndCidr">
 		</div>
 
 		<!-- <div class="input-group" id="input-group-2">
@@ -132,11 +133,12 @@
 	    </div>
 	  </div>
 	</div>
-	
-	<script type="text/javascript" src="calculator.js"></script>
+
 	<script src="https://code.jquery.com/jquery-3.3.1.js" integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60=" crossorigin="anonymous"></script>
 	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
-	<script type="text/javascript">
+	<script type="text/javascript" src="objectoriented.js"></script>
+	<script type="text/javascript" src="script.js"></script>
+	<!-- <script type="text/javascript">
 		$( document ).ready(function() {
 			$('#arrow-box-forward').click(function() {
 				if (validateInput(document.getElementById('ipAndCidr').value) === 0) {
@@ -163,6 +165,6 @@
 
 			});
     	});
-	</script>
+	</script> -->
 </body>
 </html>

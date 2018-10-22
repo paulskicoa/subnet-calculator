@@ -179,12 +179,7 @@ function isValidIP(ip) {
 	return true;
 }
 
-function isValidCidr(str) {
-	var cidrCandidate = customParseInt(str);
-	if(cidrCandidate === -1) {return false;}
-	if(cidrCandidate < 1 || cidrCandidate > 31) {return false;}
-	return true;
-}
+
 
 function customParseInt(str) { // used to validate IP or CIDR
 	// any string that has a zero as first char followed by any non-zero chars should be rejected
