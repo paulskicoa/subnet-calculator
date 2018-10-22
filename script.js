@@ -7,6 +7,7 @@ $( document ).ready(function() {
 	var numSubnets = document.getElementById('numSubnets');
 	var network;
 	ipAndCidr.addEventListener('blur', function() {
+		networkUtils.rebuildSelectOptions();
 		network = networkUtils.tryGetNetwork(ipAndCidr.value);
 	});
 
