@@ -128,7 +128,7 @@ class NetworkUtils {
 			var octetArrayBinary = [];
 			var ipWithCIDRArray = userTextInput.split('/'); // e.g. '192.168.1.0/24' becomes [192.168.1.0, 24]
 			// strip any whitespace from the end of the IP
-			var ipCandidate = userTextInput[0].trim();
+			var ipCandidate = ipWithCIDRArray[0].trim();
 			if(!this.isValidIP(ipCandidate)) { // invalid IP given
 				this.handleBadInput(-1);
 				return;
