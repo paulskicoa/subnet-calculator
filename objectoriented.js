@@ -4,15 +4,29 @@ const ipWithCidrRegex = /^(\d\d?\d?)\.(\d\d?\d?)\.(\d\d?\d?)\.(\d\d?\d?)\s*\/\d{
 const cidrRegex = /.*\/\d{1,2}$/;
 
 class Network { // can only be constructed from valid input. therefore, need an external method to validate before calling ctor
-	constructor(ip, cidr, numSubnets) {
+	constructor(ip, cidr, numSubnets, networkUtils) {
+		this.networkUtils = networkUtils; // so other methods can use the same networkUtils instance
 		this.ip = ip;
+		this.ipBinary = '';
 		this.cidr = cidr;
 		this.newCIDR = cidr; // will be adjusted if there are subnets required
 	    this.numSubnets = numSubnets;
 	    this.subnets = [];
-	    this.networkIds = [];
-	    this.usableHostsPerSubnet; // e.g. 254
-	    this.addressesPerSubnet; // e.g. 256
+	    this.addressRanges = []; // all addresses, including network id and broadcast, for each subnet. should be an array of arrays, like [['192.168.1.0', '192.168.1.X'], ['192.168.1.X+1', '192.168.1.Y']...]
+	    this.usableAddressRanges = []; // excludes network id and broadcast from each subnet
+	    this.networkIdsBinary = []; // for calculations
+	    this.networkIdsDecimal = []; // for displaying
+	    this.addFirstId();
+	    this.usableHostsPerSubnet = 0; // e.g. 254
+	    this.addressesPerSubnet = 0; // e.g. 256
+
+    }
+
+    addFirstId() {
+    	// add the first id for the network based on user input
+    	this.ipBinary = this.networkUtils.getBinaryStringForIP(this.networkUtils.getDecimalIpAsDecimalArray(this.ip));
+	    this.networkIdsBinary.push(this.networkUtils.getNetworkId(this.ipBinary, this.networkUtils.getSubnetMaskFromCIDR(this.cidr)));
+	    this.networkIdsDecimal.push(this.networkUtils.getIpAsString(this.networkUtils.getDecimalFromBinaryIP(this.networkIdsBinary[0])));
     }
 
     getNumUsableHostsPerSubnet(){ // network
@@ -25,31 +39,30 @@ class Network { // can only be constructed from valid input. therefore, need an 
 		return this.numSubnets * this.getNumUsableHostsPerSubnet();
 	}
 
-	getUsableAddressRanges(networkIdsBinary) { // network
+	getUsableAddressRanges() { // network
 		var numHostBits = 32 - this.newCIDR;
-		var usableAddressRanges = []; // should be an array of arrays, like [['192.168.1.1', '192.168.1.X'], ['192.168.1.X+1', '192.168.1.Y']...]
 		var addressPair = []; // first and last usable addresses in each subnet. the above is an array of these. this will get reused in the for loop
 		var tempNetId = ''; // temp string to hold a network ID during the calculation
 		var firstIp = ''; // holds the first address in each pair
 		var secondIp = ''; // holds the second address in each pair
-		for (var i = 0; i < networkIdsBinary.length; i++) {
+		for (var i = 0; i < this.networkIdsBinary.length; i++) {
 			addressPair = [];
 			// make host bits all 0s ending in 1 for first address
-			tempNetId = networkIdsBinary[i].substring(0, this.newCIDR); // 2nd param, end index, is not inclusive
+			tempNetId = this.networkIdsBinary[i].substring(0, this.newCIDR); // 2nd param, end index, is not inclusive
 			firstIp = tempNetId + '0'.repeat(numHostBits - 1) + '1';
 
 			// make host bits all 1s ending in 0 for last address
 			secondIp = tempNetId + '1'.repeat(numHostBits - 1) + '0';
 
 			// convert both IPs to decimal strings
-			firstIp = getIpAsString(getDecimalFromBinaryIP(firstIp));
-			secondIp = getIpAsString(getDecimalFromBinaryIP(secondIp));
+			firstIp = this.networkUtils.getIpAsString(this.networkUtils.getDecimalFromBinaryIP(firstIp));
+			secondIp = this.networkUtils.getIpAsString(this.networkUtils.getDecimalFromBinaryIP(secondIp));
 
 			addressPair.push(firstIp);
 			addressPair.push(secondIp);
-			usableAddressRanges.push(addressPair);
+			this.usableAddressRanges.push(addressPair);
 		}
-		return usableAddressRanges;
+		return this.usableAddressRanges;
 	}
 
 	displayStatistics(item) { // network
@@ -68,21 +81,12 @@ class Network { // can only be constructed from valid input. therefore, need an 
 		document.getElementById('input-summary').appendChild(cardListItem);
 	}
 
-	addSubnets(selectedValue, startingNetworkId) { // the value from the select option and the first network id, in binary
-		var networkIdsBinary = []; // for use with the getUsableAddressRanges() function
-
-		// holds address ranges for all subnets, without subtracting out the ones for network ID and broadcast
-		var addressRanges = [];
-
-		// convert the first network ID to a string like '192.168.1.0', add it to the array, display it
-		var formattedNetworkId = getIpAsString(getDecimalFromBinaryIP(startingNetworkId));
-		this.networkIds.push(formattedNetworkId);
-		
+	addSubnets(selectedValue) { // the value from the select option and the first network id, in binary
 		this.numSubnets = 2**parseInt(selectedValue); // the "value" of the chosen select option is 0-14 corresponding to 1 to 2^14 subnets, but 1 will be adjusted to 0
-		displayInputSummary('Subnets: ' + this.numSubnets);
+		this.displayInputSummary('Subnets: ' + this.numSubnets);
 
 		var bitsRequired = parseInt(selectedValue);
-		displayStatistics('Bits borrowed for subnets: ' + bitsRequired);
+		this.displayStatistics('Bits borrowed for subnets: ' + bitsRequired);
 
 		// divide the address space as required. the borrowed bits will now be part of the network ID. 
 		// e.g. if we take 192.168.1.0/24 and borrow 2 bits, we get 4 subnets that are /26.
@@ -90,143 +94,103 @@ class Network { // can only be constructed from valid input. therefore, need an 
 		// borrowed bits are from the 128 and 64 value places, and those IPs represent borrowed bit values 00, 01, 10, 11, respectively
 		// so 192.168.1.0 - 192.168.1.127 has that bit as a 0, and 192.168.1.128 - 192.168.1.255 has that bit as a 1
 		// or you could have borrowed bit values of 000, 001, 010, 011, 100, 101, 110, 111 for 3 bits, etc 
-		var startingNetmask = getSubnetMaskFromCIDR(this.cidr); //e.g. '11111111111111111111111100000000' for the /24 example above
+		var startingNetmask = this.networkUtils.getSubnetMaskFromCIDR(this.cidr); //e.g. '11111111111111111111111100000000' for the /24 example above
 
 		// adjust the subnet mask by the number of bits required to make the subnets
 		this.newCIDR = this.cidr + bitsRequired;
-		var newNetmask = getSubnetMaskFromCIDR(); //e.g. '11111111111111111111111111000000' for the /26 above
-		var decimalStringNetmask = getIpAsString(getDecimalFromBinaryIP(newNetmask));
-		displayStatistics('/' + this.newCIDR + ' netmask: ' + decimalStringNetmask);
+		var newNetmask = this.networkUtils.getSubnetMaskFromCIDR(this.newCIDR); //e.g. '11111111111111111111111111000000' for the /26 above
+		var decimalStringNetmask = this.networkUtils.getIpAsString(this.networkUtils.getDecimalFromBinaryIP(newNetmask));
+		this.displayStatistics('/' + this.newCIDR + ' netmask: ' + decimalStringNetmask);
 		
 		// need to grab the starting network ID as a binary string. e.g. '11000000101010000000000100000000' for 192.168.1.0
 		// using the subnet mask, in the network ID, flip the bit in the position of the rightmost 1 of the mask (e.g. pos. 25 in the /26 mask above)
 		// that will be the new CIDR number - 1
 		// this handles the network IDs
-		displayNetworkId(getDecimalFromBinaryIP(startingNetworkId));
-		networkIdsBinary.push(startingNetworkId);
-		// store the first address range
-		addressRanges.push(getAddressRange(startingNetworkId)); // for if we ever want the raw address ranges. unused for now.
 		var bitCombos = [];
-		var nextNetId = startingNetworkId;
-		var nextNetworkIdDecimal = 0;
+		var nextNetId = this.networkIdsBinary[0]; // start the next net ID the same as first one before altering
+		var nextNetIdDecimal = '';
+		var subnet;
 		// count up to 2**bitsRequired (num subnets), pad or trim string length to bitsRequired as needed
 		for (var i = 1; i < this.numSubnets; i++) {
-			bitCombos.push(decimalToBinary(i, bitsRequired));
+			bitCombos.push(this.networkUtils.decimalToBinary(i, bitsRequired));
 		}
 		console.log('Network ID combos to be added:', bitCombos);
 		bitCombos.forEach(function(bitCombo) {
-			nextNetId = startingNetworkId.slice(0, this.cidr) + bitCombo;
+			nextNetId = nextNetId.slice(0, this.cidr) + bitCombo;
 			nextNetId = nextNetId + '0'.repeat(32 - nextNetId.length);
-			networkIdsBinary.push(nextNetId);
-			addressRanges.push(getAddressRange(nextNetId)); // for if we ever want the raw address ranges. unused for now.
-			nextNetIdDecimal = getDecimalFromBinaryIP(nextNetId);
-			this.networkIds.push(getIpAsString(nextNetIdDecimal));
-			displayNetworkId(nextNetIdDecimal);
+
+			// !!!!!! NEW CODE !!!!!! create as many new subnet objects as user chose, add to subnets array
+			subnet = new Subnet(nextNetId, this.newCIDR);
+			this.subnets.push(subnet);
+
+			this.networkIdsBinary.push(nextNetId);
+			this.addressRanges.push(this.networkUtils.getAddressRange(nextNetId)); // for if we ever want the raw address ranges. unused for now.
+			nextNetIdDecimal = this.networkUtils.getDecimalFromBinaryIP(nextNetId);
+			this.networkIdsDecimal.push(this.networkUtils.getIpAsString(nextNetIdDecimal));
+			// subnet.displayNetworkId(nextNetIdDecimal);
 		});
-		console.log('Network IDs:', this.networkIds);
-		var usableAddressRanges = getUsableAddressRanges(networkIdsBinary);
-		usableAddressRanges.forEach(function(addressRange){
-			displayAddressRange(addressRange)});
-		var numHostsPerSubnet = getNumUsableHostsPerSubnet();
-		displayStatistics('Max ' + numHostsPerSubnet + ' hosts per subnet');
-		displayStatistics(getNumTotalAssignableIps(numHostsPerSubnet, this.numSubnets) + ' total assignable IPs');
+		// display all network IDs on network
+		for (var i = 0; i < this.networkIdsDecimal.length; i++) {
+			this.networkUtils.displayNetworkId(this.networkIdsDecimal[i], this.newCIDR);
+		}
+		console.log('Network IDs:', this.networkIdsDecimal);
+		this.usableAddressRanges = this.getUsableAddressRanges();
+		// display usable address ranges
+		this.networkUtils.displayAddressRanges(this.usableAddressRanges);
+		this.usableHostsPerSubnet = this.getNumUsableHostsPerSubnet();
+		this.displayStatistics('Max ' + this.usableHostsPerSubnet + ' hosts per subnet');
+		this.displayStatistics(this.getNumTotalAssignableIps(this.usableHostsPerSubnet, this.numSubnets) + ' total assignable IPs');
 	}
 
 	processInput() {
-		var octetArrayBinary = [];
-		var octetArrayDecimal = this.ip.split('.'); // split IP into octets
-		octetArrayDecimal.forEach(function(octetDecimal) {
-			var octetBinary = getBinaryStringForIP(octetDecimal);
-			octetArrayBinary.push(octetBinary);
-		});
+		var octetArrayDecimal = this.networkUtils.getDecimalIpAsDecimalArray(this.ip); // split IP into octets
 
-		// join the IP binary strings in the array into one and print binary IP
-		var ipBinary = octetArrayBinary.join('');
-		console.log('IP address given (binary):', ipBinary);
+		console.log('IP address given (binary):', this.ipBinary);
 
 		// print IP in decimal
-		var decimalIpString = getIpAsString(getDecimalFromBinaryIP(ipBinary));
-		displayInputSummary('IP: ' + decimalIpString);
+		var decimalIpString = this.networkUtils.getIpAsString(this.networkUtils.getDecimalFromBinaryIP(this.ipBinary));
+		this.displayInputSummary('IP: ' + decimalIpString);
 		console.log('IP address given: ', decimalIpString);
 
-		displayInputSummary('CIDR: /' + this.cidr + (cidrInferred? ' (inferred from IP class)':''));
+		this.displayInputSummary('CIDR: /' + this.cidr + (this.networkUtils.cidrInferred? ' (inferred from IP class)':''));
 		console.log('CIDR value given: /', this.cidr);
 
 		// print the subnet mask in binary
-		var netmask = getSubnetMaskFromCIDR(this.cidr);
+		var netmask = this.networkUtils.getSubnetMaskFromCIDR(this.cidr);
 		console.log('Netmask given (binary): ', netmask);
 
 		// print the subnet mask in decimal
-		var netmaskDecimal = getIpAsString(getDecimalFromBinaryIP(netmask));
+		var netmaskDecimal = this.networkUtils.getIpAsString(this.networkUtils.getDecimalFromBinaryIP(netmask));
 		// displayStatistics('Subnet Mask: ' + netmaskDecimal);
 		console.log('Netmask given: ', netmaskDecimal);
-
-		// get the network ID as a binary string
-		var networkIdBinary = getNetworkId(ipBinary, netmask);
-		console.log('Network ID (binary) :', networkIdBinary);
-		var startingNetworkId = networkIdBinary;
 
 		var select = document.getElementById('numSubnets');
 		var selectedOption = select.options[select.selectedIndex].value;
 		
-		addSubnets(selectedOption, startingNetworkId);
+		this.addSubnets(selectedOption);
 	}
 }
 
 class Subnet {
-	constructor(networkId, cidr) {
-	  	this.id = networkId; // first ip
+	constructor(networkIdBinary, cidr) {
+	  	this.id = networkIdBinary; // first ip
 	    this.cidr = cidr;
   	}
 
   	// calculate the range of addresses for the subnet. this will be from host bits all 0 (network ID) to host bits all 1 (broadcast addr)
-	// takes a networkIdBinary string and an integer CIDR
-	getAddressRange(networkIdBinary) { // subnet
+	// takes a networkIdBinary string and an integer CIDR. each instance of subnet has its own address range
+	getAddressRange() { // subnet
 		var addressRange = []; // will contain first and last address in the subnet as properly formatted strings, e.g. ['192.168.0.0', '192.168.0.255']
-		var firstAddress = getIpAsString(getDecimalFromBinaryIP(networkIdBinary));
+		var firstAddress = this.networkUtils.getIpAsString(this.networkUtils.getDecimalFromBinaryIP(this.id));
 		// change host bits from all 0s to all 1s for broadcast address
 		// get just the network portion of the IP
-		var networkPortion = networkIdBinary.slice(0, this.cidr);
+		var networkPortion = this.id.slice(0, this.cidr);
 		// concat the needed number of host bits (32-CIDR) to the end
 		var hostPortion = '1'.repeat(32 - this.cidr);
 		var lastAdressBinary = networkPortion + hostPortion;
-		var lastAddress = getIpAsString(getDecimalFromBinaryIP(lastAdressBinary));
+		var lastAddress = this.networkUtils.getIpAsString(this.networkUtils.getDecimalFromBinaryIP(lastAdressBinary));
 		addressRange.push(firstAddress, lastAddress);
 		return addressRange;
-	}
-
-	// return the network ID as a binary string
-	getNetworkId(ip, netmask) { // subnet
-		var networkId = '';
-		// do bitwise AND on the IP address and subnet mask to get network ID
-		for (var i = 0; i < ip.length; i++) {
-			networkId += ip.charAt(i) & netmask.charAt(i);
-		}
-		return networkId;
-	}
-
-	displayNetworkId(networkIdDecimal) { // subnet
-		// takes network ID as a decimal array, display it for user
-		// more common to display e.g. 10.3.0.0/16 as just 10.3/16, so this will do that 
-		var networkIdChild = document.createElement('li');
-		var networkIdString = getIpAsString(networkIdDecimal);
-		var regex = /(\.0)+$/;
-		networkIdString = networkIdString.replace(regex, '') + '/' + this.newCIDR;
-		var networkIdText = document.createTextNode(networkIdString);
-		networkIdChild.appendChild(networkIdText);
-		networkIdChild.className = 'list-group-item';
-		document.getElementById('network-id-list').appendChild(networkIdChild);
-		console.log('Network ID: ', networkIdString);
-	}
-
-	// no conversion with this function. Address range should already be in decimal
-	displayAddressRange(addressRange) { // subnet
-		var addressRangeChild = document.createElement('li');
-		var addressRangeText = document.createTextNode(addressRange[0] + ' to\n' + addressRange[1]);
-		addressRangeChild.appendChild(addressRangeText);
-		addressRangeChild.className = 'list-group-item';
-		document.getElementById('address-range-list').appendChild(addressRangeChild);
-		console.log('Address range: ', addressRange[0], '-', addressRange[1]);
 	}
 }
 
@@ -235,13 +199,56 @@ class NetworkUtils {
 		this.cidrInferred = false;
 	}
 
+	displayNetworkId(networkIdDecimal, newCIDR) {
+		// takes network ID as a decimal string, display it for user
+		// more common to display e.g. 10.3.0.0/16 as just 10.3/16, so this will do that 
+		var networkIdChild = document.createElement('li');
+		var regex = /(\.0)+$/;
+		networkIdDecimal = networkIdDecimal.replace(regex, '') + '/' + newCIDR;
+		var networkIdText = document.createTextNode(networkIdDecimal);
+		networkIdChild.appendChild(networkIdText);
+		networkIdChild.className = 'list-group-item';
+		document.getElementById('network-id-list').appendChild(networkIdChild);
+		console.log('Network ID: ', networkIdDecimal);
+	}
+
+	displayAddressRanges(addressRanges) {
+		for (var i = 0; i < addressRanges.length; i++) {
+			this.displayAddressRange(addressRanges[i]);
+		}
+	}
+	
+	// no conversion with this function. Address range should already be in decimal
+	displayAddressRange(addressRange) {
+		var addressRangeChild = document.createElement('li');
+		var addressRangeText = document.createTextNode(addressRange[0] + ' to\n' + addressRange[1]);
+		addressRangeChild.appendChild(addressRangeText);
+		addressRangeChild.className = 'list-group-item';
+		document.getElementById('address-range-list').appendChild(addressRangeChild);
+		console.log('Address range: ', addressRange[0], '-', addressRange[1]);
+	}
+
+	getDecimalIpAsDecimalArray(ip) {
+		return ip.split('.');
+	}
+
+	// take ip as binary string. return the network ID as a binary string. this is for the first ID in a network. the rest will be calculated in a different method
+	getNetworkId(ip, netmask) {
+		var networkId = '';
+		// do bitwise AND on the IP address and subnet mask to get network ID
+		for (var i = 0; i < ip.length; i++) {
+			networkId += ip.charAt(i) & netmask.charAt(i);
+		}
+		return networkId;
+	}
+
 	isValidIP(ip) { // utils
 		if(ip.match(ipOnlyRegex) === null) {return false;}
 		var matches = ipOnlyRegex.exec(ip); // put the capture groups into an array. the octets will start at matches[1]
 		// each should be a number between 0 and 255
 		var octet;
 		for (var i = 1; i < matches.length; i++) {
-			octet = customParseInt(matches[i]);
+			octet = this.customParseInt(matches[i]);
 			if(octet < 0 || octet > 255) {
 				return false;
 			}
@@ -261,33 +268,23 @@ class NetworkUtils {
 		}
 	}
 
-	attemptCidrInference() { // utils?
-		var octetArrayDecimal = ip.split('.');
-		var firstOctet = parseInt(octetArrayDecimal[0]);
-		if(firstOctet >= 0 && firstOctet <= 127) {return 8;} // Class A
-		if(firstOctet >= 128 && firstOctet <= 191) {return 16;} // Class B
-		if(firstOctet >= 192 && firstOctet <= 223) {return 24;} // Class C
-
-		// user hasn't entered enough info. subnet mask/CIDR can't be determined, and there's no way to proceed
-		return -3;
-	}
-
-	getBinaryStringForIP(octetDecimal){ // utils
-		var currentValue = octetDecimal;
-		var octetBinary = '';
+	getBinaryStringForIP(octetArrayDecimal){ // utils
+		var ipBinaryString = '';
 		// find the first value in powers of two that's smaller than currentValue
-		powersOfTwo.forEach(function(powerOfTwo) {
-			if (currentValue >= powerOfTwo) {
-				currentValue -= powerOfTwo;
-				octetBinary += '1';
-			}
+		for (var i = 0; i < octetArrayDecimal.length; i++) {
+			powersOfTwo.forEach(function(powerOfTwo) {
+				if (octetArrayDecimal[i] >= powerOfTwo) {
+					octetArrayDecimal[i] -= powerOfTwo;
+					ipBinaryString += '1';
+				}
 
-			else {
-				octetBinary += '0';
-			}
-		});
-
-		return octetBinary;
+				else {
+					ipBinaryString += '0';
+				}
+			});
+		}
+		
+		return ipBinaryString;
 	}
 
 	getSubnetMaskFromCIDR(cidrValue) { // utils
@@ -353,17 +350,6 @@ class NetworkUtils {
 		return;
 	}
 
-	attemptCidrInference(ip) {
-		var octetArrayDecimal = ip.split('.');
-		var firstOctet = parseInt(octetArrayDecimal[0]);
-			if(firstOctet >= 0 && firstOctet <= 127) {return 8;} // Class A
-			if(firstOctet >= 128 && firstOctet <= 191) {return 16;} // Class B
-			if(firstOctet >= 192 && firstOctet <= 223) {return 24;} // Class C
-
-			// user hasn't entered enough info. subnet mask/CIDR can't be determined, and there's no way to proceed
-			return -3;
-	}
-
 	fixSubnetSelectOptions(cidr) {
 		// ip and cidr are valid if this method gets called
 		// restore all the options that exist by default
@@ -397,6 +383,17 @@ class NetworkUtils {
 		else {
 			return -1; // input was bad
 		}
+	}
+
+	attemptCidrInference(ip) {
+		var octetArrayDecimal = this.getDecimalIpAsDecimalArray(ip);
+		var firstOctet = parseInt(octetArrayDecimal[0]);
+		if(firstOctet >= 0 && firstOctet <= 127) {return 8;} // Class A
+		if(firstOctet >= 128 && firstOctet <= 191) {return 16;} // Class B
+		if(firstOctet >= 192 && firstOctet <= 223) {return 24;} // Class C
+
+		// user hasn't entered enough info. subnet mask/CIDR can't be determined, and there's no way to proceed
+		return -3;
 	}
 
 	tryGetNetwork(userTextInput) {
@@ -452,7 +449,7 @@ class NetworkUtils {
 		this.fixSubnetSelectOptions(cidr);
 
 		// create a new network object with 0 subnets (default), which will be used if user clicks forward before changing subnets
-		var network = new Network(ip, cidr, '0');
+		var network = new Network(ip, cidr, '0', this);
 		console.log(network.ip, network.cidr, network.numSubnets);
 		return network;
 	}
@@ -498,22 +495,22 @@ class NetworkUtils {
 	}
 
 	decimalToBinary(decimal, bitsRequired) {
-	var currentValue = decimal;
-	var binaryString = '';
+		var currentValue = decimal;
+		var binaryString = '';
 
-	// to get max value from 3 bits, it's 1*2^2 + 1*2^1 + 1*2^0 = 7, for example
-	for (var exp = bitsRequired - 1; exp >= 0; exp--) {
-		if (currentValue >= 2**exp) {
-			currentValue -= 2**exp;
-			binaryString += '1';
+		// to get max value from 3 bits, it's 1*2^2 + 1*2^1 + 1*2^0 = 7, for example
+		for (var exp = bitsRequired - 1; exp >= 0; exp--) {
+			if (currentValue >= 2**exp) {
+				currentValue -= 2**exp;
+				binaryString += '1';
+			}
+
+			else {
+				binaryString += '0';
+			}
 		}
 
-		else {
-			binaryString += '0';
-		}
-	}
-
-	binaryString = binaryString.substring(binaryString.length - bitsRequired);
-	return binaryString;
+		binaryString = binaryString.substring(binaryString.length - bitsRequired);
+		return binaryString;
 	}
 }
