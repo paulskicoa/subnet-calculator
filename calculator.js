@@ -165,7 +165,7 @@ function processInput() {
 	processSubnets(selectedOption, startingNetworkId);
 }
 
-function isValidIP(ip) {
+function isValidIP(ip) { // utils
 	if(ip.match(ipOnlyRegex) === null) {return false;}
 	var matches = ipOnlyRegex.exec(ip); // put the capture groups into an array. the octets will start at matches[1]
 	// each should be a number between 0 and 255
@@ -179,9 +179,7 @@ function isValidIP(ip) {
 	return true;
 }
 
-
-
-function customParseInt(str) { // used to validate IP or CIDR
+function customParseInt(str) { // used to validate IP or CIDR , utils
 	// any string that has a zero as first char followed by any non-zero chars should be rejected
 	var badInputRegex = /^0\d\d?$/;
 	if(str.match(badInputRegex) == null) {
@@ -193,7 +191,7 @@ function customParseInt(str) { // used to validate IP or CIDR
 	}
 }
 
-function attemptCidrInference() {
+function attemptCidrInference() { // utils?
 	var octetArrayDecimal = ip.split('.');
 	var firstOctet = parseInt(octetArrayDecimal[0]);
 	if(firstOctet >= 0 && firstOctet <= 127) {return 8;} // Class A
@@ -204,7 +202,7 @@ function attemptCidrInference() {
 	return -3;
 }
 
-function processSubnets(selectedValue, startingNetworkId) {
+function processSubnets(selectedValue, startingNetworkId) { // network
 	// holds the network ids for all subnets (in decimal)
 	var networkIds = [];
 	var networkIdsBinary = []; // for use with the getUsableAddressRanges() function
@@ -213,7 +211,7 @@ function processSubnets(selectedValue, startingNetworkId) {
 	var addressRanges = [];
 
 	// convert the first network ID to a string like '192.168.1.0', add it to the array, display it
-	var formattedNetworkId = getIpAsString(getDecimalForNetworkId(startingNetworkId));
+	var formattedNetworkId = getIpAsString(getDecimalFromBinaryIP(startingNetworkId));
 	networkIds.push(formattedNetworkId);
 	
 	var numberOfSubnets = 2**parseInt(selectedValue);
@@ -242,7 +240,7 @@ function processSubnets(selectedValue, startingNetworkId) {
 	// that will be the new CIDR number - 1
 	// this handles the network IDs
 	var startNetId = startingNetworkId;
-	displayNetworkId(getDecimalForNetworkId(startingNetworkId), newCIDR);
+	displayNetworkId(getDecimalFromBinaryIP(startingNetworkId), newCIDR);
 	networkIdsBinary.push(startNetId);
 	// store the first address range
 	addressRanges.push(getAddressRange(startNetId, newCIDR)); // for if we ever want the raw address ranges. unused for now.
@@ -259,7 +257,7 @@ function processSubnets(selectedValue, startingNetworkId) {
 		nextNetId = nextNetId + '0'.repeat(32 - nextNetId.length);
 		networkIdsBinary.push(nextNetId);
 		addressRanges.push(getAddressRange(nextNetId, newCIDR)); // for if we ever want the raw address ranges. unused for now.
-		nextNetIdDecimal = getDecimalForNetworkId(nextNetId);
+		nextNetIdDecimal = getDecimalFromBinaryIP(nextNetId);
 		networkIds.push(getIpAsString(nextNetIdDecimal));
 		displayNetworkId(nextNetIdDecimal, newCIDR);
 	});
@@ -272,7 +270,7 @@ function processSubnets(selectedValue, startingNetworkId) {
 	displayStatistics(getNumTotalAssignableIps(numHostsPerSubnet, numberOfSubnets) + ' total assignable IPs');
 }
 
-function displayInputSummary(item) {
+function displayInputSummary(item) { // network
 	var cardListItem = document.createElement('li');
 	var cardListItemText = document.createTextNode(item);
 	cardListItem.appendChild(cardListItemText);
@@ -280,7 +278,7 @@ function displayInputSummary(item) {
 	document.getElementById('input-summary').appendChild(cardListItem);
 }
 
-function displayStatistics(item) {
+function displayStatistics(item) { // network
 	var cardListItem = document.createElement('li');
 	var cardListItemText = document.createTextNode(item);
 	cardListItem.appendChild(cardListItemText);
@@ -288,7 +286,7 @@ function displayStatistics(item) {
 	document.getElementById('statistics').appendChild(cardListItem);
 }
 
-function displayNetworkId(networkIdDecimal, newCIDR) {
+function displayNetworkId(networkIdDecimal, newCIDR) { // subnet
 	// takes network ID as a decimal array, display it for user
 	// more common to display e.g. 10.3.0.0/16 as just 10.3/16, so this will do that 
 	var networkIdChild = document.createElement('li');
@@ -303,7 +301,7 @@ function displayNetworkId(networkIdDecimal, newCIDR) {
 }
 
 // no conversion with this function. Address range should already be in decimal
-function displayAddressRange(addressRange) {
+function displayAddressRange(addressRange) { // subnet
 	var addressRangeChild = document.createElement('li');
 	var addressRangeText = document.createTextNode(addressRange[0] + ' to\n' + addressRange[1]);
 	addressRangeChild.appendChild(addressRangeText);
@@ -312,7 +310,7 @@ function displayAddressRange(addressRange) {
 	console.log('Address range: ', addressRange[0], '-', addressRange[1]);
 }
 
-function getBinaryStringForIP(octetDecimal){
+function getBinaryStringForIP(octetDecimal){ // utils
 	var currentValue = octetDecimal;
 	var octetBinary = '';
 	// find the first value in powers of two that's smaller than currentValue
@@ -331,7 +329,7 @@ function getBinaryStringForIP(octetDecimal){
 
 }
 
-function getSubnetMaskFromCIDR(cidrValue) {
+function getSubnetMaskFromCIDR(cidrValue) { // utils
 	var subnetMask = '';
 	var networkBits = cidrValue; // given CIDR value tells us how many bits belong to the network
 	var hostBits = 32 - cidrValue; // IPv4 addresses are 32 bits, so remainder belongs to hosts
@@ -350,7 +348,7 @@ function getSubnetMaskFromCIDR(cidrValue) {
 }
 
 // return the network ID as a binary string
-function getNetworkId(ip, netmask) {
+function getNetworkId(ip, netmask) { // subnet
 	var networkId = '';
 	// do bitwise AND on the IP address and subnet mask to get network ID
 	for (var i = 0; i < ip.length; i++) {
@@ -361,8 +359,8 @@ function getNetworkId(ip, netmask) {
 }
 
 // converts an IP given as a binary string (32 bits) to an array of decimal octets
-function getDecimalFromBinaryIP(binary) {
-	var binaryOctets = binary.match(/.{8}/g); //
+function getDecimalFromBinaryIP(binary) { // utils
+	var binaryOctets = binary.match(/.{8}/g);
 	var decimalOctets = [];
 	binaryOctets.forEach(function (octet) {
 		// each octet is a binary string. use the sum of powers of 2 to get decimal value
@@ -376,21 +374,15 @@ function getDecimalFromBinaryIP(binary) {
 	return decimalOctets;
 }
 
-// take the network ID as a binary string and return the network ID as an array of decimal octets
-function getDecimalForNetworkId(networkId) {
-	var networkIdOctetsDecimal = getDecimalFromBinaryIP(networkId);
-	return networkIdOctetsDecimal;
-}
-
 // change the array of IP octets to a string for displaying
-function getIpAsString(ipOctets) {
+function getIpAsString(ipOctets) { // utils
 	var ipString = ipOctets.join('.');
 	return ipString;
 }
 
 // calculate the range of addresses for the subnet. this will be from host bits all 0 (network ID) to host bits all 1 (broadcast addr)
 // takes a networkIdBinary string and an integer CIDR
-function getAddressRange(networkIdBinary, CIDR) {
+function getAddressRange(networkIdBinary, CIDR) { // subnet
 	var addressRange = []; // will contain first and last address in the subnet as properly formatted strings, e.g. ['192.168.0.0', '192.168.0.255']
 	var firstAddress = getIpAsString(getDecimalFromBinaryIP(networkIdBinary));
 	// change host bits from all 0s to all 1s for broadcast address
@@ -409,7 +401,7 @@ function getAddressRange(networkIdBinary, CIDR) {
 // all host bits are 0 for the network ID, so to get the first usable address on a subnet, we should make the host bits all 0s ending in 1
 // all host bits are 1 for the broadcast addr, so to get the last usable address on a subnet, make the host bits all 1s ending in 0
 // e.g. 192.168.1.0, 192.168.1.32 should become 192.168.1.1 to 192.168.1.30 and 192.168.1.33 to ...
-function getUsableAddressRanges(networkIdsBinary, newCIDR) {
+function getUsableAddressRanges(networkIdsBinary, newCIDR) { // network
 	var numHostBits = 32 - newCIDR;
 	var usableAddressRanges = []; // should be an array of arrays, like [['192.168.1.1', '192.168.1.X'], ['192.168.1.X+1', '192.168.1.Y']...]
 	var addressPair = []; // first and last usable addresses in each subnet. the above is an array of these. this will get reused in the for loop
@@ -436,17 +428,17 @@ function getUsableAddressRanges(networkIdsBinary, newCIDR) {
 	return usableAddressRanges;
 }
 
-function getNumUsableHostsPerSubnet(newCIDR){
+function getNumUsableHostsPerSubnet(newCIDR){ // network
 	var numHostBits = 32 - newCIDR;
 	var hostsPerSubnet = (2**numHostBits) - 2; // subtract one for network id and another for broadcast address
 	return hostsPerSubnet;
 }
 
-function getNumTotalAssignableIps(numberOfSubnets, hostsPerSubnet) {
+function getNumTotalAssignableIps(numberOfSubnets, hostsPerSubnet) { // network
 	return numberOfSubnets * hostsPerSubnet;
 }
 
-function clearResults() {
+function clearResults() { // utils
 	var networkIdList = document.getElementById('network-id-list');
 	var addressRangeList = document.getElementById('address-range-list');
 	var inputSummaryList = document.getElementById('input-summary');
@@ -469,7 +461,7 @@ function clearResults() {
 	}	
 }
 
-function decimalToBinary(decimal, bitsRequired) {
+function decimalToBinary(decimal, bitsRequired) { // utils
 	var currentValue = decimal;
 	var binaryString = '';
 

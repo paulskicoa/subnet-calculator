@@ -19,6 +19,7 @@ $( document ).ready(function() {
 			numSubnets = numSubnets.value;
 			network.numSubnets = numSubnets;
 			console.log(network.ip, network.cidr, network.numSubnets);
+			network.processInput();
 			$('#container-2-id').fadeOut(300);
 			$('#arrow-box-forward').fadeOut(300);
 			$('#authorInfo').fadeOut(300);
