@@ -83,7 +83,13 @@ class Network { // can only be constructed from valid input. therefore, need an 
 
 	addSubnets(selectedValue) { // the value from the select option and the first network id, in binary
 		this.numSubnets = 2**parseInt(selectedValue); // the "value" of the chosen select option is 0-14 corresponding to 1 to 2^14 subnets, but 1 will be adjusted to 0
-		this.displayInputSummary('Subnets: ' + this.numSubnets);
+		if(selectedValue === '0') {
+			this.displayInputSummary('Subnets: 0 (only 1 network)');
+		}
+
+		else {
+			this.displayInputSummary('Subnets: ' + this.numSubnets);
+		}
 
 		var bitsRequired = parseInt(selectedValue);
 		this.displayStatistics('Bits borrowed for subnets: ' + bitsRequired);
@@ -119,11 +125,8 @@ class Network { // can only be constructed from valid input. therefore, need an 
 		for (var i = 0; i < bitCombos.length; i++) {
 			nextNetId = nextNetId.slice(0, this.cidr) + bitCombos[i];
 			nextNetId = nextNetId + '0'.repeat(32 - nextNetId.length);
-
-			// !!!!!! NEW CODE !!!!!! create as many new subnet objects as user chose, add to subnets array. not doing anything with subnet objects yet
 			subnet = new Subnet(nextNetId, this.newCIDR);
 			this.subnets.push(subnet);
-
 			this.networkIdsBinary.push(nextNetId);
 			this.addressRanges.push(subnet.getAddressRange(this.networkUtils));
 			nextNetIdDecimal = this.networkUtils.getDecimalFromBinaryIP(nextNetId);
@@ -167,7 +170,6 @@ class Network { // can only be constructed from valid input. therefore, need an 
 
 		var select = document.getElementById('numSubnets');
 		var selectedOption = select.options[select.selectedIndex].value;
-		
 		this.addSubnets(selectedOption);
 	}
 }

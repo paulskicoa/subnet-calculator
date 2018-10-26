@@ -13,7 +13,6 @@ $( document ).ready(function() {
 
 	$('#arrow-box-forward').click(function() {
 		networkUtils.clearResults();
-		// inside anon function. set value of this
 		network = networkUtils.tryGetNetwork(ipAndCidr.value);
 		if (network !== null) {
 			// get subnet choice
