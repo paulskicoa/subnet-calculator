@@ -116,7 +116,10 @@ class Network { // can only be constructed from valid input. therefore, need an 
 		var nextNetId = this.networkIdsBinary[0]; // start the next net ID the same as first one before altering
 		var nextNetIdDecimal = '';
 		var subnet;
+		subnet = new Subnet(nextNetId, this.newCIDR);
+		this.addressRanges.push(subnet.getAddressRange(this.networkUtils));
 		// count up to 2**bitsRequired (num subnets), pad or trim string length to bitsRequired as needed
+
 		for (var i = 1; i < this.numSubnets; i++) {
 			bitCombos.push(this.networkUtils.decimalToBinary(i, bitsRequired));
 		}
@@ -145,7 +148,7 @@ class Network { // can only be constructed from valid input. therefore, need an 
 		// display all addresses in range, including network ID and broadcast. a checkbox will toggle which one is displayed
 		this.networkUtils.displayAddressRanges(this.addressRanges, true);
 		this.usableHostsPerSubnet = this.getNumUsableHostsPerSubnet();
-		this.displayStatistics('Max ' + this.usableHostsPerSubnet + ' hosts per subnet');
+		this.displayStatistics(this.usableHostsPerSubnet + ' assignable host IPs per subnet');
 		this.displayStatistics(this.getNumTotalAssignableIps(this.usableHostsPerSubnet, this.numSubnets) + ' total assignable IPs');
 	}
 
@@ -248,12 +251,13 @@ class NetworkUtils {
 			target = document.getElementById('address-range-list');
 			target.appendChild(addressRangeChild);
 			target.firstChild.style.borderTop = 0;
+			console.log('Address range: ', addressRange[0], '-', addressRange[1]);
 		}
 		else {
 			target = document.getElementById('address-range-list-assignable-only');
 			target.appendChild(addressRangeChild);
+			console.log('Usable address range: ', addressRange[0], '-', addressRange[1]);
 		}
-		console.log('Address range: ', addressRange[0], '-', addressRange[1]);
 	}
 
 	getDecimalIpAsDecimalArray(ip) {
