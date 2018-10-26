@@ -47,11 +47,11 @@ div.jumbotron.jumbotron-fluid {
 }
 
 .card {
-	transition: all 0.5s;
+	transition: all 0.1s;
 }
 
 .card:hover {
-	transform: scale(1.1);
+	border: 3px solid #FFAD2F;
 }
 
 /*.card:hover .card-header {
@@ -251,10 +251,23 @@ a:hover {
 }
 
 #cog-network {
-	fill: #2C6BB1;
-	transition: all 0.5s;
+	fill: #212529;
+	opacity: 0.8;
 }
 
-#viewbox-cog:hover #cog-network {
-	fill: #FFAD2F;
+.checkbox-menu li label {
+    display: block;
+    padding: 3px 10px;
+    clear: both;
+    font-weight: normal;
+    line-height: 1.42857143;
+    color: #333;
+    white-space: nowrap;
+    margin:0;
+}
+
+.checkbox-menu li input {
+    margin: 0px 5px;
+    top: 2px;
+    position: relative;
 }
