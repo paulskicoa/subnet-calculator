@@ -26,6 +26,7 @@ $( document ).ready(function() {
 			$('#header-message-results').delay(400).fadeIn(300);
 			$('#card-deck-id').delay(400).fadeIn(300);
 			$('#arrow-box-back').delay(400).fadeIn(300);
+			$('.form-check').delay(400).fadeIn(300);
 		}									
 	});
 
@@ -36,6 +37,7 @@ $( document ).ready(function() {
 		$('#arrow-box-forward').delay(400).fadeIn(300);
 		$('#authorInfo').delay(400).fadeIn(300);
 		$('#header-message-results').fadeOut(300);
+		$('.form-check').fadeOut(300);
 		$('#header-message-intro').delay(400).fadeIn(300);
 	});
 });

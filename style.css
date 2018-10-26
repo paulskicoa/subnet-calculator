@@ -67,6 +67,7 @@ div.jumbotron.jumbotron-fluid {
  .card-header {
 	text-align: center;
 	transition: background-color 0.5s;
+	border-bottom: 0;
 }
 
  .card-body {
@@ -221,4 +222,24 @@ a:hover {
 
 #selector-input-group {
 	width: 23rem;
+}
+
+#network-header-and-checkbox {
+	display: flex;
+	align-items: center;
+	padding-right: 1rem;
+}
+
+#network-header {
+	flex: 1;
+	padding-left: 4rem;
+}
+
+.icon-chevron-bottom {
+	fill: #73A1D4;
+}
+
+#viewbox-chevron-bottom {
+	height: 2rem;
+	width: 2rem;
 }
