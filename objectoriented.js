@@ -115,20 +115,21 @@ class Network { // can only be constructed from valid input. therefore, need an 
 			bitCombos.push(this.networkUtils.decimalToBinary(i, bitsRequired));
 		}
 		console.log('Network ID combos to be added:', bitCombos);
-		bitCombos.forEach(function(bitCombo) {
-			nextNetId = nextNetId.slice(0, this.cidr) + bitCombo;
+		
+		for (var i = 0; i < bitCombos.length; i++) {
+			nextNetId = nextNetId.slice(0, this.cidr) + bitCombos[i];
 			nextNetId = nextNetId + '0'.repeat(32 - nextNetId.length);
 
-			// !!!!!! NEW CODE !!!!!! create as many new subnet objects as user chose, add to subnets array
+			// !!!!!! NEW CODE !!!!!! create as many new subnet objects as user chose, add to subnets array. not doing anything with subnet objects yet
 			subnet = new Subnet(nextNetId, this.newCIDR);
 			this.subnets.push(subnet);
 
 			this.networkIdsBinary.push(nextNetId);
-			this.addressRanges.push(this.networkUtils.getAddressRange(nextNetId)); // for if we ever want the raw address ranges. unused for now.
+			this.addressRanges.push(subnet.getAddressRange(this.networkUtils));
 			nextNetIdDecimal = this.networkUtils.getDecimalFromBinaryIP(nextNetId);
 			this.networkIdsDecimal.push(this.networkUtils.getIpAsString(nextNetIdDecimal));
-			// subnet.displayNetworkId(nextNetIdDecimal);
-		});
+		}
+
 		// display all network IDs on network
 		for (var i = 0; i < this.networkIdsDecimal.length; i++) {
 			this.networkUtils.displayNetworkId(this.networkIdsDecimal[i], this.newCIDR);
@@ -179,16 +180,16 @@ class Subnet {
 
   	// calculate the range of addresses for the subnet. this will be from host bits all 0 (network ID) to host bits all 1 (broadcast addr)
 	// takes a networkIdBinary string and an integer CIDR. each instance of subnet has its own address range
-	getAddressRange() { // subnet
+	getAddressRange(networkUtils) { // subnet
 		var addressRange = []; // will contain first and last address in the subnet as properly formatted strings, e.g. ['192.168.0.0', '192.168.0.255']
-		var firstAddress = this.networkUtils.getIpAsString(this.networkUtils.getDecimalFromBinaryIP(this.id));
+		var firstAddress = networkUtils.getIpAsString(networkUtils.getDecimalFromBinaryIP(this.id));
 		// change host bits from all 0s to all 1s for broadcast address
 		// get just the network portion of the IP
 		var networkPortion = this.id.slice(0, this.cidr);
 		// concat the needed number of host bits (32-CIDR) to the end
 		var hostPortion = '1'.repeat(32 - this.cidr);
 		var lastAdressBinary = networkPortion + hostPortion;
-		var lastAddress = this.networkUtils.getIpAsString(this.networkUtils.getDecimalFromBinaryIP(lastAdressBinary));
+		var lastAddress = networkUtils.getIpAsString(networkUtils.getDecimalFromBinaryIP(lastAdressBinary));
 		addressRange.push(firstAddress, lastAddress);
 		return addressRange;
 	}

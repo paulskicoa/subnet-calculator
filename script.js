@@ -17,8 +17,7 @@ $( document ).ready(function() {
 		network = networkUtils.tryGetNetwork(ipAndCidr.value);
 		if (network !== null) {
 			// get subnet choice
-			numSubnets = numSubnets.value;
-			network.numSubnets = numSubnets;
+			network.numSubnets = numSubnets.value;
 			console.log(network.ip, network.cidr, network.numSubnets);
 			network.processInput();
 			$('#container-2-id').fadeOut(300);
