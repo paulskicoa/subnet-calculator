@@ -22,6 +22,18 @@ $( document ).ready(function() {
 		}
 	});
 
+	var addressesCheckbox = document.getElementById('addresses-checkbox');
+	addressesCheckbox.addEventListener('change', function() {
+		if(this.checked) {
+			$('#address-range-list').fadeOut(300);
+			$('#address-range-list-assignable-only').delay(400).fadeIn(300);
+		}
+		else {
+			$('#address-range-list-assignable-only').fadeOut(300);
+			$('#address-range-list').delay(400).fadeIn(300);
+		}
+	});
+
 	$('#arrow-box-forward').click(function() {
 		networkUtils.clearResults();
 		network = networkUtils.tryGetNetwork(ipAndCidr.value);

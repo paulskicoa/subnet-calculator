@@ -141,7 +141,9 @@ class Network { // can only be constructed from valid input. therefore, need an 
 		console.log('Network IDs:', this.networkIdsDecimal);
 		this.usableAddressRanges = this.getUsableAddressRanges();
 		// display usable address ranges
-		this.networkUtils.displayAddressRanges(this.usableAddressRanges);
+		this.networkUtils.displayAddressRanges(this.usableAddressRanges, false);
+		// display all addresses in range, including network ID and broadcast. a checkbox will toggle which one is displayed
+		this.networkUtils.displayAddressRanges(this.addressRanges, true);
 		this.usableHostsPerSubnet = this.getNumUsableHostsPerSubnet();
 		this.displayStatistics('Max ' + this.usableHostsPerSubnet + ' hosts per subnet');
 		this.displayStatistics(this.getNumTotalAssignableIps(this.usableHostsPerSubnet, this.numSubnets) + ' total assignable IPs');
@@ -229,19 +231,28 @@ class NetworkUtils {
 		console.log('Network ID: ', networkIdDecimal);
 	}
 
-	displayAddressRanges(addressRanges) {
+	displayAddressRanges(addressRanges, includeAll) {
 		for (var i = 0; i < addressRanges.length; i++) {
-			this.displayAddressRange(addressRanges[i]);
+			this.displayAddressRange(addressRanges[i], includeAll);
 		}
 	}
 	
 	// no conversion with this function. Address range should already be in decimal
-	displayAddressRange(addressRange) {
+	displayAddressRange(addressRange, includeAll) {
 		var addressRangeChild = document.createElement('li');
 		var addressRangeText = document.createTextNode(addressRange[0] + ' to\n' + addressRange[1]);
 		addressRangeChild.appendChild(addressRangeText);
 		addressRangeChild.className = 'list-group-item';
-		document.getElementById('address-range-list').appendChild(addressRangeChild);
+		var target;
+		if(includeAll) {
+			target = document.getElementById('address-range-list');
+			target.appendChild(addressRangeChild);
+			target.firstChild.style.borderTop = 0;
+		}
+		else {
+			target = document.getElementById('address-range-list-assignable-only');
+			target.appendChild(addressRangeChild);
+		}
 		console.log('Address range: ', addressRange[0], '-', addressRange[1]);
 	}
 
@@ -475,6 +486,7 @@ class NetworkUtils {
 		var networkIdList = document.getElementById('network-id-list');
 		var networkIdListTrailingZeroes = document.getElementById('network-id-list-trailing-zeroes');
 		var addressRangeList = document.getElementById('address-range-list');
+		var addressRangeListAssignableOnly = document.getElementById('address-range-list-assignable-only');
 		var inputSummaryList = document.getElementById('input-summary');
 		var statisticsList = document.getElementById('statistics');
 
@@ -488,6 +500,10 @@ class NetworkUtils {
 
 		while(addressRangeList.firstChild) {
 			addressRangeList.removeChild(addressRangeList.firstChild);
+		}
+
+		while(addressRangeListAssignableOnly.firstChild) {
+			addressRangeListAssignableOnly.removeChild(addressRangeListAssignableOnly.firstChild);
 		}
 
 		while(inputSummaryList.firstChild) {
