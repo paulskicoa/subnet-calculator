@@ -236,7 +236,19 @@ a:hover {
 	border-bottom: 0;
 }
 
-#network-dropdown-menu-button {
+#addresses-header-and-checkbox {
+	display: flex;
+	align-items: center;
+	border-bottom: 1px solid rgba(0,0,0,.125);
+}
+
+#addresses-header {
+	flex: 1;
+	padding-left: 4rem;
+	border-bottom: 0;
+}
+
+.dropdown-toggle {
 	background: transparent;
 	border: none;
 	outline: none;
@@ -244,13 +256,12 @@ a:hover {
 	cursor: pointer;
 }
 
-#viewbox-cog {
+.viewbox-cog {
 	width: 1.5rem;
 	height: 1.5rem;
-	
 }
 
-#cog-network {
+.icon-cog {
 	fill: #212529;
 	opacity: 0.8;
 }
