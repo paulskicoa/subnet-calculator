@@ -54,14 +54,16 @@
 					    <ul class="dropdown-menu checkbox-menu allow-focus" aria-labelledby="network-dropdown-menu-button">
 					  	<li>
 					  		<label>
-					  			<input type="checkbox"> Show trailing zeroes
+					  			<input type="checkbox" id="network-checkbox"> Hide trailing zeroes
 					  		</label>
 					  	</li>
 					  </ul>
 					  </div>
 				  </div>
 				  <div class="card-body scroll">
-					    <ul class="list-group list-group-flush" id="network-id-list">
+					    <ul class="list-group list-group-flush" id="network-id-list" style="display: none;">
+						</ul>
+						<ul class="list-group list-group-flush" id="network-id-list-trailing-zeroes">
 						</ul>
 				   </div>
 			  </div>

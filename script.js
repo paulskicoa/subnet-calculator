@@ -10,6 +10,17 @@ $( document ).ready(function() {
 		networkUtils.rebuildSelectOptions();
 		network = networkUtils.tryGetNetwork(ipAndCidr.value);
 	});
+	var networkCheckbox = document.getElementById('network-checkbox');
+	networkCheckbox.addEventListener('change', function() {
+		if(this.checked) {
+			$('#network-id-list-trailing-zeroes').fadeOut(300);
+			$('#network-id-list').delay(400).fadeIn(300);
+		}
+		else {
+			$('#network-id-list').fadeOut(300);
+			$('#network-id-list-trailing-zeroes').delay(400).fadeIn(300);
+		}
+	});
 
 	$('#arrow-box-forward').click(function() {
 		networkUtils.clearResults();

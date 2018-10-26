@@ -136,6 +136,7 @@ class Network { // can only be constructed from valid input. therefore, need an 
 		// display all network IDs on network
 		for (var i = 0; i < this.networkIdsDecimal.length; i++) {
 			this.networkUtils.displayNetworkId(this.networkIdsDecimal[i], this.newCIDR);
+			this.networkUtils.displayNetworkIdWithTrailingZeroes(this.networkIdsDecimal[i], this.newCIDR);
 		}
 		console.log('Network IDs:', this.networkIdsDecimal);
 		this.usableAddressRanges = this.getUsableAddressRanges();
@@ -212,6 +213,18 @@ class NetworkUtils {
 		networkIdChild.appendChild(networkIdText);
 		networkIdChild.className = 'list-group-item';
 		document.getElementById('network-id-list').appendChild(networkIdChild);
+		console.log('Network ID: ', networkIdDecimal);
+	}
+
+	displayNetworkIdWithTrailingZeroes(networkIdDecimal, newCIDR) {
+		// takes network ID as a decimal string, display it for user
+		var networkIdChild = document.createElement('li');
+		networkIdDecimal = networkIdDecimal + '/' + newCIDR;
+		var networkIdText = document.createTextNode(networkIdDecimal);
+		networkIdChild.appendChild(networkIdText);
+		networkIdChild.className = 'list-group-item';
+		networkIdChild.style.borderTop = 0;
+		document.getElementById('network-id-list-trailing-zeroes').appendChild(networkIdChild);
 		console.log('Network ID: ', networkIdDecimal);
 	}
 
@@ -459,12 +472,17 @@ class NetworkUtils {
 
 	clearResults() {
 		var networkIdList = document.getElementById('network-id-list');
+		var networkIdListTrailingZeroes = document.getElementById('network-id-list-trailing-zeroes');
 		var addressRangeList = document.getElementById('address-range-list');
 		var inputSummaryList = document.getElementById('input-summary');
 		var statisticsList = document.getElementById('statistics');
 
 		while(networkIdList.firstChild) {
 			networkIdList.removeChild(networkIdList.firstChild);
+		}
+
+		while(networkIdListTrailingZeroes.firstChild) {
+			networkIdListTrailingZeroes.removeChild(networkIdListTrailingZeroes.firstChild);
 		}
 
 		while(addressRangeList.firstChild) {
