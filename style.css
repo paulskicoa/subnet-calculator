@@ -54,9 +54,9 @@ div.jumbotron.jumbotron-fluid {
 	transform: scale(1.1);
 }
 
-.card:hover .card-header {
+/*.card:hover .card-header {
 	background-color: #FFAD2F;
-}
+}*/
 
 .author-info {
 	padding-top: 2rem;
@@ -67,7 +67,6 @@ div.jumbotron.jumbotron-fluid {
  .card-header {
 	text-align: center;
 	transition: background-color 0.5s;
-	border-bottom: 0;
 	background-color: #f8f9fa;
 }
 
@@ -228,26 +227,34 @@ a:hover {
 #network-header-and-checkbox {
 	display: flex;
 	align-items: center;
-	padding-right: 1rem;
+	border-bottom: 1px solid rgba(0,0,0,.125);
 }
 
 #network-header {
 	flex: 1;
 	padding-left: 4rem;
+	border-bottom: 0;
 }
-
-/*.icon-chevron-bottom {
-	fill: #73A1D4;
-}
-
-#viewbox-chevron-bottom {
-	height: 2rem;
-	width: 2rem;
-}*/
 
 #network-dropdown-menu-button {
 	background: transparent;
 	border: none;
-	color: #73A1D4;
+	outline: none;
+	color: transparent;
 	cursor: pointer;
+}
+
+#viewbox-cog {
+	width: 1.5rem;
+	height: 1.5rem;
+	
+}
+
+#cog-network {
+	fill: #2C6BB1;
+	transition: all 0.5s;
+}
+
+#viewbox-cog:hover #cog-network {
+	fill: #FFAD2F;
 }
