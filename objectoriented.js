@@ -223,8 +223,9 @@ class NetworkUtils {
 		var networkIdText = document.createTextNode(networkIdDecimal);
 		networkIdChild.appendChild(networkIdText);
 		networkIdChild.className = 'list-group-item';
-		networkIdChild.style.borderTop = 0;
-		document.getElementById('network-id-list-trailing-zeroes').appendChild(networkIdChild);
+		var networkIdListTrailingZeroes = document.getElementById('network-id-list-trailing-zeroes');
+		networkIdListTrailingZeroes.appendChild(networkIdChild);
+		networkIdListTrailingZeroes.firstChild.style.borderTop = 0;
 		console.log('Network ID: ', networkIdDecimal);
 	}
 
