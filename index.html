@@ -44,10 +44,21 @@
 			  </div>
 			  <div class="card bg-light mb-3" style="max-width: 18rem;">
 			  	  <div id="network-header-and-checkbox">
-				  <div class="card-header" id="network-header">Networks</div>
-				  <svg viewBox="0 0 8 8" class="icon" id="viewbox-chevron-bottom">
-					<use xlink:href="open-iconic.svg#chevron-bottom" class="icon-chevron-bottom" id="chevron-bottom-networks"></use>
-				  </svg>
+					  <div class="card-header" id="network-header">Networks</div>
+					  <div class="dropdown">
+					  	<button class="dropdown-toggle" type="button" id="network-dropdown-menu-button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+					  		<!-- <svg viewBox="0 0 8 8" class="icon" id="viewbox-chevron-bottom">
+							<use xlink:href="open-iconic.svg#chevron-bottom" class="icon-chevron-bottom" id="chevron-bottom-networks"></use>
+					  		</svg> -->
+					    </button>
+					    <ul class="dropdown-menu checkbox-menu allow-focus" aria-labelledby="network-dropdown-menu">
+					  	<li>
+					  		<label>
+					  			<input type="checkbox"> Show trailing zeroes
+					  		</label>
+					  	</li>
+					  </ul>
+					  </div>
 				  </div>
 				  <div class="card-body scroll">
 					    <ul class="list-group list-group-flush" id="network-id-list">
